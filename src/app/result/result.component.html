@@ -1,0 +1,31 @@
+<div>
+  <div class="row">
+    <div class="col-md-12">
+      <h1 class="text-center">Result of the Vote</h1>
+    </div>
+  </div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">USER</th>
+        <th scope="col">OPTION</th>
+        <th scope="col">Time</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let x of sender; let i = index" [ngClass]="{'table-success': x.user === addr}">
+        <td>{{i+1}}</td>
+        <td>{{x.user}}</td>
+        <td>{{x.option | uppercase}}</td>
+        <td>{{x.time*1000| date:'MMMM d, y, HH:mm:ss z'}}</td>
+      </tr>
+      <tr>
+        <td>#</td>
+        <td><b>TOTAL</b></td>
+        <td><b>YES: </b> {{yes}}</td>
+        <td><b>NO: </b> {{no}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
