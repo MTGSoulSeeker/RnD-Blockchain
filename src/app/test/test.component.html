@@ -1,63 +1,26 @@
 <div class="container">
-  <div class="dropdown">
-    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
-      aria-expanded="false">
-      Select number of question(s)
-    </button>
-    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-      <a class="dropdown-item" (click)="inputQuantity(1)">1</a>
-      <a class="dropdown-item" (click)="inputQuantity(2)">2</a>
-      <a class="dropdown-item" (click)="inputQuantity(3)">3</a>
-      <a class="dropdown-item" (click)="inputQuantity(4)">4</a>
-      <a class="dropdown-item" (click)="inputQuantity(5)">5</a>
-      <a class="dropdown-item" (click)="inputQuantity(6)">6</a>
-      <a class="dropdown-item" (click)="inputQuantity(7)">7</a>
-      <a class="dropdown-item" (click)="inputQuantity(8)">8</a>
-      <a class="dropdown-item" (click)="inputQuantity(9)">9</a>
-      <a class="dropdown-item" (click)="inputQuantity(10)">10</a>
-    </div>
-  </div>
-  <div *ngFor="let question of multipleChoice; let i = index; trackBy: customTrackBy">
-    <div class="input-group">
-      <input class="col" type="text" [(ngModel)]="multipleChoice[i].question" placeholder="Question #{{question.id}}">
-      <div class="input-group-append">
-        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Option(s)
-        </button>
-        <div class="dropdown-menu">
-          <a class="dropdown-item" (click)="inputQuantity02(i,1)" data-toggle="collapse" data-target="#collapseExample0">1</a>
-          <a class="dropdown-item" (click)="inputQuantity02(i,2)" data-toggle="collapse" data-target="#collapseExample1">2</a>
-          <a class="dropdown-item" (click)="inputQuantity02(i,3)" data-toggle="collapse" data-target="#collapseExample2">3</a>
-          <a class="dropdown-item" (click)="inputQuantity02(i,4)" data-toggle="collapse" data-target="#collapseExample3">4</a>
-          <a class="dropdown-item" (click)="inputQuantity02(i,5)" data-toggle="collapse" data-target="#collapseExample4">5</a>
-        </div>
-      </div>
-    </div>
-    <div class="card card-body">
-      <div *ngFor="let option of multipleChoice[i].options; let x = index; trackBy: customTrackBy">
-        Please define your option:
-        <input class="col" type="text" [(ngModel)]="multipleChoice[i].options[x]" placeholder="Option #{{x}}">
-      </div>
-    </div>
-    <br>
+  <div class="example-container mat-elevation-z8">
+    <mat-table #table [dataSource]="dataSource" matSort>
+
+      <ng-container matColumnDef="addr">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Address </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.addr}} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="options">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Option </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.options}} </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+    <mat-paginator #paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20]" [showFirstLastButtons]="true">
+    </mat-paginator>
   </div>
 
-  <div class="row text-center">
-    <div>
-      <button (click)="openDialog(multipleChoice)">Submit</button>
-      <button (click)="open('false')">Loading</button>
-      <button (click)="regis()">Loading</button>
-
-    </div>
+  <div *ngIf="isLoaded == false">
+    <button class="btn btn-success" (click)="getResult()">Check result</button>
   </div>
+
 </div>
-
-
-
-<!-- <div class="container">
-  <div *ngFor="let question of multipleChoice">
-    <h3>{{question.id}}</h3>
-    <div *ngFor="let opt of question.option">
-      <h4>{{opt}}</h4>
-    </div>
-  </div>
-</div> -->

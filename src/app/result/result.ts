@@ -1,5 +1,10 @@
 export class Result {
     user:string;
-    option:string;
+    options:string[];
     time:any;
+}
+
+export class Question {
+    questionNumber:string;
+    questionDetail:string;
 }

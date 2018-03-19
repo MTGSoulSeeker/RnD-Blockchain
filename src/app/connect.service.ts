@@ -8,7 +8,7 @@ import 'rxjs/add/observable/of';
 const web3 = require('web3');
 const contract = require('truffle-contract');
 const VotingABI = require('../../build/contracts/votingVer1_3_2.json');
-const AccountABI = require('../../build/contracts/ManageAccount.json');
+const AccountABI = require('../../build/contracts/ManageAccount_1_0_1.json');
 
 declare var window: any;
 

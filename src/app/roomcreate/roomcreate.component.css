@@ -48,7 +48,6 @@ a:hover {
 
 .form-control {
   border-radius: 0px;
-  text-transform: capitalize;
   font-size: 14px;
   font-weight: 500;
   width: 100%;
@@ -87,7 +86,6 @@ textarea::-webkit-input-placeholder {
 .btn {
   font-family: 'Hind Siliguri', sans-serif;
   font-size: 15px;
-  text-transform: uppercase;
   font-weight: 600;
   padding: 14px 24px;
   margin-bottom: 4px;
@@ -119,7 +117,6 @@ hr.style {
 
 .form-control-yolo {
   border-radius: 0px;
-  text-transform: capitalize;
   font-size: 14px;
   font-weight: 500;
   width: 85%;

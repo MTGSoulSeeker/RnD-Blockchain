@@ -25,6 +25,7 @@ export class RoomComponent implements OnInit {
   //Multi Questions and Options
   multipleChoice: multiChoice[] = [];
   tempMultiChoice: Choices[] = [];
+  flag: boolean = false;
 
   //Initialize a service to connect to blockchain, a dialog to open Popup, route to get ID and location to go back
   constructor(private _connectService: ConnectService, public dialog: MatDialog, private route: ActivatedRoute, private location: Location) {
@@ -59,9 +60,8 @@ export class RoomComponent implements OnInit {
   }
 
   //Make an End transaction to close the room
-  hello() {
-    console.log("tri cho");
-    return;
+  sendEnd() {
+    this.flag = true;
   }
 
   //Convert option from hex to string
@@ -87,7 +87,7 @@ export class RoomComponent implements OnInit {
       if (result.status == "Success") {
         this.vote(result.user, result.pass);
       }
-      else{
+      else {
         informResult = this.dialog.open(StatusComponent, {
           width: '600px',
           data: { Dloading: false, Ddetail: "Please check again your username and password" }
@@ -193,14 +193,14 @@ export class RoomComponent implements OnInit {
     }
 
     //Check whether you have enough money or not
-    if (self._connectService.web3.eth.getBalance(user)*1 < 1) {
+    if (self._connectService.web3.eth.getBalance(user) * 1 < 1) {
       console.log(self._connectService.web3.eth.getBalance(user));
       informResult = self.dialog.open(StatusComponent, {
         width: '600px',
         data: { Dloading: loading, Ddetail: "You don't have enough money to do this transaction" }
       });
       return;
-    }    
+    }
 
     //Submitting Transactions
     let submitTrans = this.dialog.open(StatusComponent, {
@@ -239,12 +239,16 @@ export class RoomComponent implements OnInit {
       });
   }
 
+
   //Show the Result after Confirm
   checkResult(id, addr) {
-    console.log(id);
+    let n: number = this.tempMultiChoice.length;
+    console.log(n);
     let dialogRef02 = this.dialog.open(ResultComponent, {
-      width: '1200px',
-      data: { Did: id, Daddr: addr }
+      width: '1500px',
+      // panelClass: 'disable-mat-dialog-container',
+      data: { Did: id, Daddr: addr, Dnumber: n, Dquestion: this.multipleChoice }
+      // data: { Did: id, Ddata: self.resultInfo }
     });
   }
 

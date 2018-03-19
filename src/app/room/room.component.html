@@ -11,20 +11,20 @@
               <h1 (click)="getOption()">{{room.title}}</h1>
             </h5>
             <p class="card-text text-xl-left" style="font-size:1.5em">
-              <b>Description: </b>{{room.description}}
+              <b>Owner: </b>
+              {{room.owner}}
               <br>
               <b>Date Created: </b> {{room.dateCreated*1000| date:'MMMM d, y, HH:mm:ss z'}}
               <br>
               <b>Date End: </b> {{room.dateEnd|date:'MMMM d, y, HH:mm:ss z'}}
               <br>
-              <b>Owner: </b>
-              {{room.owner}}
+              <b>Description: </b>{{room.description}}
               <br>
               <b>Time remaining: </b>
               <br>
             </p>
             <h2 class="text-center">
-              <countdown-timer (zeroTrigger)="hello()" [timeOnly]="true" [end]="room.dateEnd|date:'medium'"></countdown-timer>
+              <countdown-timer (zeroTrigger)="sendEnd()" [timeOnly]="true" [end]="room.dateEnd|date:'medium'"></countdown-timer>
               hours
             </h2>
             <div class="progress" style="height: 2.5em;">
@@ -33,29 +33,31 @@
               </div>
             </div>
             <br>
-            <div class="alert alert-warning alert-dismissible fade show" role="alert" (click)="openResult(id)">
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
               <strong>Be awared:</strong> Your choice can not be changed after it is submitted. Please read again carefully. You
               will be able to check your answer when the vote is ended.
               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <h2 class="text-center">
-              QUESTION
-            </h2>
-            <div *ngFor="let questions of multipleChoice; let i = index">
-              <h1>{{questions.question}}</h1>
-              <form>
-                <div class="row">
-                  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
-                    <div *ngFor="let option of multipleChoice[i].options; let x = index" class="btn-group btn-group-toggle">
-                      <label class="btn btn-info" style="width:200px;" [class.active]="(tempMultiChoice[i].questionID === i && tempMultiChoice[i].option === option)">
-                        <input type="radio" [name]="option" (click)="onSelect(i,x,option)" >{{option}}
-                      </label>
+            <div [hidden]="!flag" class="text-center">
+              <button class="btn btn-success" (click)="openResult(id)">CHECK RESULT</button>
+            </div>
+            <div [hidden]="flag">              
+              <div *ngFor="let questions of multipleChoice; let i = index">
+                <h1>{{questions.question}}</h1>
+                <form>
+                  <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+                      <div *ngFor="let option of multipleChoice[i].options; let x = index" class="btn-group btn-group-toggle">
+                        <label class="btn btn-info" [class.active]="(tempMultiChoice[i].questionID === i && tempMultiChoice[i].option === option)">
+                          <input type="radio" [name]="option" (click)="onSelect(i,x,option)">{{option}}
+                        </label>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </form>
+                </form>
+              </div>
             </div>
           </div>
           <div class="card-footer">

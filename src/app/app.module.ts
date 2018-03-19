@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
-import { FormsModule, ReactiveFormsModule  } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { Md5 } from 'ts-md5/dist/md5';
 import { ScrollToModule } from 'ng2-scroll-to';
@@ -10,8 +10,10 @@ import { MatButtonModule } from '@angular/material';
 import { MatDialogModule } from '@angular/material';
 import { CountdownTimerModule } from 'ngx-countdown-timer';
 import { filterPipe } from './pipes';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material';
+import { MatSortModule } from '@angular/material';
 
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './navbar/navbar.component';
@@ -64,16 +66,18 @@ import { StatusComponent } from './status/status.component';
     ScrollToModule.forRoot(),
     MatButtonModule,
     MatCardModule,
-    MatDialogModule,  
+    MatDialogModule,
     CountdownTimerModule.forRoot(),
-    MatProgressBarModule,
-    NgbModule.forRoot()
+    NgbModule.forRoot(),
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule
   ],
   entryComponents: [
     ConfirmComponent,
     ResultComponent
   ],
-  providers: [Md5,ConnectService],
+  providers: [Md5, ConnectService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
