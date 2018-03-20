@@ -64,17 +64,25 @@ export class RegisterComponent implements OnInit {
   createAccount(tempUser: User, isValid: boolean) {
     var addr: any;
     var self = this;
-    
+    let loading: boolean = true; //Check if it is running or not
+
     var tempID = self.convertStringToByte(tempUser.id);
     for (let i = 0; i < self.listAcc.length; i++) {
       if (tempID == self.listAcc[i].id) {
+        loading = false;
         let dialogRef = self.dialog.open(StatusComponent, {
           width: '600px',
-          data: { Dloading: false, Ddetail: "These ID has been registed." }
+          data: { Dloading: loading, Ddetail: "These ID has been registed." }
         });
         return;
       }
     }
+
+    //Submitting Transactions
+    let submitTrans = this.dialog.open(StatusComponent, {
+      width: '600px',
+      data: { Dloading: loading },
+    });
 
     this._connectService.web3.personal.newAccount(tempUser.password, (err, res) => {
       addr = res
@@ -95,9 +103,11 @@ export class RegisterComponent implements OnInit {
                 })
                 .then(function (v) {
                   if (v.logs.length != 0) {
+                    loading = false;
+                    submitTrans.close();
                     let dialogRef = self.dialog.open(StatusComponent, {
                       width: '600px',
-                      data: { Dloading: false, Ddetail: "Successful, your account is: " + tempUser.id }
+                      data: { Dloading: loading, Ddetail: "Successful, your account is: " + tempUser.id }
                     });
                   }
                   // else {
@@ -108,9 +118,10 @@ export class RegisterComponent implements OnInit {
                   // }
                 })
                 .catch(e => {
+                  loading = false;
                   let dialogRef = self.dialog.open(StatusComponent, {
                     width: '600px',
-                    data: { Dloading: false, Ddetail: "Unfortunately, your account cannot be created. Please try again." }
+                    data: { Dloading: loading, Ddetail: "Unfortunately, your account cannot be created. Please try again." }
                   });
                 });
             });

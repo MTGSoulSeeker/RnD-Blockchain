@@ -44,7 +44,6 @@ export class ConfirmComponent implements OnInit {
 
           self.listAcc.push({ id: log.args.id, addr: log.args.addr });
 
-          console.log(self.listAcc);
         })
       })
   }
@@ -72,7 +71,6 @@ export class ConfirmComponent implements OnInit {
         this._ConnectService.web3.personal.unlockAccount(this.listAcc[i].addr, value.password, 15000, (err, res) => {
           this.temp = res;
           this.account.user = this.listAcc[i].addr;
-          console.log(this.temp);
         });
       }
     }

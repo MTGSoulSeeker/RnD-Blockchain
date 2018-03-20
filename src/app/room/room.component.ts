@@ -105,6 +105,7 @@ export class RoomComponent implements OnInit {
 
     dialogRef01.afterClosed().subscribe(result => {
       console.log(`Dialog closed:` + result.status);
+      console.log(result.user);
       if (result.status == "Success") {
         this.checkResult(id, result.user);
       }
@@ -168,7 +169,6 @@ export class RoomComponent implements OnInit {
         this.tempMultiChoice[z].option = tempChoice;
       }
     }
-    console.log(this.tempMultiChoice)
   }
 
   //Cast the vote after Confirm
@@ -194,6 +194,7 @@ export class RoomComponent implements OnInit {
 
     //Check whether you have enough money or not
     if (self._connectService.web3.eth.getBalance(user) * 1 < 1) {
+      loading = false;
       console.log(self._connectService.web3.eth.getBalance(user));
       informResult = self.dialog.open(StatusComponent, {
         width: '600px',
@@ -237,13 +238,13 @@ export class RoomComponent implements OnInit {
       .catch(err => {
         console.log(err);
       });
+
   }
 
 
   //Show the Result after Confirm
   checkResult(id, addr) {
     let n: number = this.tempMultiChoice.length;
-    console.log(n);
     let dialogRef02 = this.dialog.open(ResultComponent, {
       width: '1500px',
       // panelClass: 'disable-mat-dialog-container',

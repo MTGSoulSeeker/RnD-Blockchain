@@ -4,6 +4,7 @@ import { ConnectService } from '../connect.service';
 import { MatDialog } from '@angular/material';
 import { ConfirmComponent } from '../confirm/confirm.component';
 import { multiChoice } from '../test/multipleChoice';
+import { StatusComponent } from '../status/status.component';
 
 @Component({
   selector: 'app-roomcreate',
@@ -59,7 +60,7 @@ export class RoomcreateComponent implements OnInit {
 
     let dialogRef = this.dialog.open(ConfirmComponent, {
       width: '600px',
-      data: 'This text is passed into the dialog!'
+      data: 'Please Login to confirm your decision'
     });
     dialogRef.afterClosed().subscribe(result => {
       console.log(`Dialog closed:` + result.status);
@@ -77,14 +78,22 @@ export class RoomcreateComponent implements OnInit {
   createRoom(ROOM: RoomCreation, user) {
     let id: string;
     let self = this;
+    let loading: boolean = true; //Check if it is running or not
     let x: multiChoice[] = self.multipleChoice;
-    console.log (x)
+    console.log(x)
     console.log(ROOM);
+
+    let submitTrans = this.dialog.open(StatusComponent, {
+      width: '600px',
+      data: { Dloading: loading },
+      disableClose: true
+    });
+
     this._connectService.VotingContract
       .deployed()
       .then(function (temp) {
         temp.openRoom(ROOM.title, ROOM.type, ROOM.description, ROOM.dateEnd, { from: user, gas: 1000000 })
-          .then(function (v) {            
+          .then(function (v) {
             self._connectService.VotingContract
               .deployed()
               .then(function (temp02) {
@@ -96,13 +105,19 @@ export class RoomcreateComponent implements OnInit {
                     })
                 }
               })
+            loading = false;
+            submitTrans.close();
+            let dialogRef = self.dialog.open(StatusComponent, {
+              width: '600px',
+              data: { Ddetail: "Congratualation, your vote has been successfully casted!" }
+            });
           })
           .catch(err => {
             console.log(err);
           });
       });
-    
-      self.multipleChoice=[];
+
+    self.multipleChoice = [];
 
   }
 

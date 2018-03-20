@@ -78,7 +78,7 @@
  
  
  
- contract votingVer1_3_2
+ contract voting
  {
     room[] rooms;
     
@@ -195,7 +195,7 @@
         require(!rooms[_roomID].listVoters.voter[addr].voted[_roomID]);
         _;
     }
-    function votingVer1_3_2()
+    function voting()
         public 
     {
         
@@ -263,13 +263,7 @@
         LOGaddListVoter(rooms[_id].id, rooms[_id].listVoters.addrs);
         return true;
     }
-    function addToListVoteOf(uint _roomID, bytes32[] _option) private
-    {
-        for(uint j = 0; j < getNumberOfPolls(_roomID); j++)
-        {
-            rooms[_roomID].poll[j].listVotersOf[_option[j]].push(msg.sender);
-        }
-    }
+ 
     
     function voteForPrivateRoom(uint _roomID, bytes32[] _option)
         roomOpening(_roomID)
@@ -284,7 +278,6 @@
                     rooms[_roomID].listVoters.voter[msg.sender].voteFor[_roomID] = _option;
                     rooms[_roomID].listVoters.voter[msg.sender].voted[_roomID] = true;
                     rooms[_roomID].listVoters.voter[msg.sender].point ++;
-                    addToListVoteOf(_roomID, _option);
                     LOGvoteNotify(rooms[_roomID].id, rooms[_roomID].listVoters.addrs[i], rooms[_roomID].listVoters.voter[msg.sender].voteFor[_roomID]);
                     return;
                 }
@@ -305,7 +298,6 @@
         }
         rooms[_roomID].listVoters.voter[msg.sender].voteFor[_roomID] = _option;
         rooms[_roomID].listVoters.voter[msg.sender].voted[_roomID] = true;
-        addToListVoteOf(_roomID, _option);
         rooms[_roomID].listVoters.voter[msg.sender].point ++;
         LOGvoteNotify(rooms[_roomID].id, msg.sender, rooms[_roomID].listVoters.voter[msg.sender].voteFor[_roomID]);
     }
