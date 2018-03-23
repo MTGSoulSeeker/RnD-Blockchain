@@ -1,0 +1,39 @@
+.container {
+  color: rgb(255, 145, 0);
+  min-height: 642px;
+}
+
+.col-md-2 {
+  margin-left: 0.3%;
+  flex: 0 0 19.666667% !important;
+  max-width: 19.666667%;
+}
+
+input[type=checkbox],
+input[type=radio] {
+  margin: 8px 0 0;
+  margin-top: 1px\9;
+  line-height: normal;
+}
+
+.btn {
+  font-family: 'Hind Siliguri', sans-serif;
+  font-size: 15px;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 14px 24px;
+  margin-bottom: 4px;
+  letter-spacing: 2.2px;
+  border-radius: 0px;
+  line-height: 1.6;
+  border: transparent;
+  -webkit-transition: all 0.3s;
+  -moz-transition: all 0.3s;
+  transition: all 0.3s;
+  word-wrap: break-word;
+  white-space: normal !important;
+}
+
+.form-button{
+    width: 100%;
+}
