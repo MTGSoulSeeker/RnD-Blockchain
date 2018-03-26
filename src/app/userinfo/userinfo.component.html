@@ -1,0 +1,58 @@
+<div class="container-fluid" style="margin-top:5%;">
+  <!-- <p>
+    Thanh bi khung {{id}} {{minh}}
+  </p>
+  <button type="button" (click)="getInfo()">getInfo</button> -->
+
+  <div class="col-md-8">
+    <ul class="list-group">
+      <li class="list-group-item bg-secondary text-white">
+        <b>Summary</b>
+      </li>
+      <li class="list-group-item">User ID: {{id}}</li>
+      <li class="list-group-item">User Address: {{account}}</li>
+      <li class="list-group-item">Point: </li>
+    </ul>
+  </div>
+
+  <br>
+
+  <div class="card bg-light" *ngFor="let info of userHistory">
+    <div class="card-body">
+      <div class="row text-center">
+        <div class="col-md-4">
+          Transaction: {{info.trans}}
+          <br> Address: {{info.addr}}
+        </div>
+        <div class="col-md-1">
+          <i class="fa fa-arrow-right fa-lg"></i>
+        </div>
+        <div *ngIf="info.action === 'LOGroomOpened' " class="col-md-3">
+          Action: Create Room
+        </div>
+        <div *ngIf="info.action === 'LOGvoteNotify' " class="col-md-3">
+          Action: Vote
+        </div>
+        <div class="col-md-1">
+          <i class="fa fa-arrow-right fa-lg"></i>
+        </div>
+        <div class="col-md-3">
+          Date: {{info.time*1000| date:'MMMM d, y, HH:mm:ss z'}}
+          <br> Room ID: {{info.roomID}}
+          <div *ngIf="info.action === 'LOGvoteNotify' ">
+            <div *ngFor="let option of info.options, let i = index">
+              Question {{i}}: {{option}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- <div class="card bg-light">
+  <div class="card-header">Header</div>
+  <div class="card-body">
+    <h5 class="card-title">Light card title</h5>
+    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+  </div>
+</div> -->

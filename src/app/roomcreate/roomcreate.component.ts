@@ -18,9 +18,17 @@ export class RoomcreateComponent implements OnInit {
   room: RoomCreation;
   temp: RoomCreation;
   flag: string;
+  tempListVoter: string = "";
+  listVoter: string[] = [];
 
   constructor(private _connectService: ConnectService, public dialog: MatDialog) {
     this.multipleChoice = [];
+  }
+
+  generateListVoter() {
+    this.listVoter = this.tempListVoter.replace(/\s/g, '').split(";");
+    console.log(this.tempListVoter);
+    console.log(this.listVoter);
   }
 
   ngOnInit() {
@@ -104,12 +112,19 @@ export class RoomcreateComponent implements OnInit {
                       console.log(v02);
                     })
                 }
+                if (ROOM.type == 1) {
+                  self.generateListVoter();
+                  temp02.setListVotersByID(v.logs[0].args.roomID.toString(), self.listVoter, { from: user, gas: 1000000 })
+                    .then(function (v02) {
+                      console.log(v02);
+                    })
+                }
               })
             loading = false;
             submitTrans.close();
             let dialogRef = self.dialog.open(StatusComponent, {
               width: '600px',
-              data: { Ddetail: "Congratualation, your vote has been successfully casted!" }
+              data: { Ddetail: "Congratualation, your room has been successfully created!" }
             });
           })
           .catch(err => {
@@ -127,7 +142,6 @@ export class RoomcreateComponent implements OnInit {
     for (let i = 0; i < n; i++) {
       this.multipleChoice.push({ id: i, question: null, options: [] });
     }
-
     console.log(this.multipleChoice);
   }
 

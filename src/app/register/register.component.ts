@@ -28,21 +28,17 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit() {
     this.user = {
-      username: '',
+      // username: '',
       id: '',
       password: '',
       confirmPassword: ''
     }
-  }
-
-  ngAfterViewInit() {
     this.watchEvent();
 
   }
 
-  save(model: User, isValid: boolean) {
-    // call API to save customer
-    console.log(model, isValid);
+  ngAfterContentInit() {
+    this.watchEvent();
   }
 
   convertStringToByte(string) {
@@ -86,20 +82,18 @@ export class RegisterComponent implements OnInit {
 
     this._connectService.web3.personal.newAccount(tempUser.password, (err, res) => {
       addr = res
-
       this._connectService.web3.personal.unlockAccount(this._connectService.web3.eth.accounts[0], "123", 15000, () => {
         this._connectService.web3.eth.sendTransaction({ from: this._connectService.web3.eth.accounts[0], to: addr, value: this._connectService.web3.toWei(10, "ether") },
           (err, res) => {
-            console.log(this._connectService.web3.eth.getTransaction(res));
-            console.log(res);
             while (this._connectService.web3.eth.getBalance(addr) == 0) {
               console.log("no money, fam");
             }
 
             this._connectService.web3.personal.unlockAccount(addr, tempUser.password, 15000, () => {
-              this._connectService.AccountContract.deployed()
+              this._connectService.VotingContract.deployed()
                 .then(da => {
-                  return da.createAcc(tempUser.username, tempUser.id, { from: addr, gas: 3000000 })
+                  // return da.createAcc(tempUser.username, tempUser.id, { from: addr, gas: 3000000 })
+                  return da.createAcc(tempUser.id, { from: addr, gas: 1000000 })
                 })
                 .then(function (v) {
                   if (v.logs.length != 0) {
@@ -133,16 +127,15 @@ export class RegisterComponent implements OnInit {
 
   watchEvent() {
     let self = this;
-    this._connectService.AccountContract
+    this._connectService.VotingContract
       .deployed()
       .then(function (temp) {
         var events = temp.allEvents({ fromBlock: 0, toBlock: 'lastest' });
 
         events.watch(function (error, log) {
-
-          self.listAcc.push({ id: log.args.id, addr: log.args.addr });
-
-          console.log(self.listAcc);
+          if (log.event === "LOGaccountInfo") {
+            self.listAcc.push({ id: log.args.id, addr: log.args.addr });
+          }
         })
       })
   }

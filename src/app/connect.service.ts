@@ -7,8 +7,8 @@ import 'rxjs/add/observable/of';
 
 const web3 = require('web3');
 const contract = require('truffle-contract');
-const VotingABI = require('../../build/contracts/votingVer1_3_2.json');
-const AccountABI = require('../../build/contracts/ManageAccount_1_0_1.json');
+const VotingABI = require('../../build/contracts/voting12.json');
+// const AccountABI = require('../../build/contracts/ManageAccount12.json');
 
 declare var window: any;
 
@@ -17,7 +17,7 @@ export class ConnectService {
 
   web3: any;
   VotingContract = contract(VotingABI);
-  AccountContract = contract(AccountABI);
+  // AccountContract = contract(AccountABI);
   account: any;
 
 
@@ -41,7 +41,7 @@ export class ConnectService {
   onReady = () => {
     //Add Contract
     this.VotingContract.setProvider(this.web3.currentProvider);
-    this.AccountContract.setProvider(this.web3.currentProvider);
+    // this.AccountContract.setProvider(this.web3.currentProvider);
     //Get all accounts
     this.web3.eth.getAccounts((err, accs) => {
       if (err != null) {
@@ -68,7 +68,7 @@ export class ConnectService {
   addToList(account) {
     console.log("Ahihi: " + account);
 
-    this.AccountContract
+    this.VotingContract
       .deployed()
       .then(function (instance) {
         instance.add2list({
@@ -130,7 +130,7 @@ export class ConnectService {
     let acc = this.account;
     let self = this;
 
-    this.AccountContract
+    this.VotingContract
       .deployed()
       .then(function (temp) {
         console.log(acc);

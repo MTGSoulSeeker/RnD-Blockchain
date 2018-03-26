@@ -46,6 +46,21 @@
               Please input your voting date to finish.
             </small>
           </div>
+          <div *ngIf="temp.type === 'Private' " class="form-group">
+            <!-- <label class="control-label required" for="">List Voters</label>
+            <sup style="color:red">*</sup>
+            <input type="text" class="form-control tempListVoter-size" name="ListVoter" [ngModel]="tempListVoter" #ListVoter="ngModel" required>
+            <small [hidden]="ListVoter.valid || (ListVoter.pristine && !f.submitted)" class="text-danger">
+              Please input the ID of voter you want to invite. Ex: ID123; IT789; ...
+            </small> -->
+            <label class="control-label required" for="">List Voters</label>
+            <sup style="color:red">*</sup>
+            <input type="text" class="form-control tempListVoter-size" name="tempListVoter" [(ngModel)]="tempListVoter" #ListVoter="ngModel"
+              required placeholder="Please input the ID of voter you want to invite. Ex: ID123; IT789; ...">
+            <small [hidden]="ListVoter.valid || (ListVoter.pristine && !f.submitted)" class="text-danger">
+              Please input the ID of voter you want to invite. Ex: ID123; IT789; ...
+            </small>
+          </div>
           <div class="form-group">
             <label class="control-label" for="">Question</label>
             <sup style="color:red">*</sup>
@@ -70,12 +85,13 @@
             </div>
             <div *ngFor="let question of multipleChoice; let i = index; trackBy: customTrackBy">
               <div class="input-group-yolo">
-                <input class="form-control-yolo" type="text" name="question" [(ngModel)]="multipleChoice[i].question" placeholder="QUESTION #{{i+1}}" #question="ngModel" required>
+                <input class="form-control-yolo" type="text" name="question" [(ngModel)]="multipleChoice[i].question" placeholder="QUESTION #{{i+1}}"
+                  #question="ngModel" required>
                 <div class="input-group-append">
                   <button class="btn-yolo btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Option(s)
                   </button>
                   <div class="dropdown-menu">
-                    <a class="dropdown-item" (click)="inputQuantity02(i,1)">1</a>
+                    <!-- <a class="dropdown-item" (click)="inputQuantity02(i,1)">1</a> -->
                     <a class="dropdown-item" (click)="inputQuantity02(i,2)">2</a>
                     <a class="dropdown-item" (click)="inputQuantity02(i,3)">3</a>
                     <a class="dropdown-item" (click)="inputQuantity02(i,4)">4</a>
@@ -84,7 +100,8 @@
                 </div>
               </div>
               <div *ngFor="let option of multipleChoice[i].options; let x = index; trackBy: customTrackBy">
-                <input class="form-control-colo" type="text" name="option" [(ngModel)]="multipleChoice[i].options[x]" placeholder="OPTION #{{x+1}}" #option="ngModel" required>
+                <input class="form-control-colo" type="text" name="option" [(ngModel)]="multipleChoice[i].options[x]" placeholder="OPTION #{{x+1}}"
+                  #option="ngModel" required>
               </div>
               <hr class="style">
             </div>
@@ -95,6 +112,7 @@
             <pre>Is form valid?: <br>{{f.valid | json}}</pre>
             <pre>Is form submitted?: <br>{{f.submitted | json}}</pre>
             <pre>submitted value: <br>{{f.value | json}}</pre>
+            <button type="button" (click)="generateListVoter()">Check</button>
           </div>
         </form>
       </div>

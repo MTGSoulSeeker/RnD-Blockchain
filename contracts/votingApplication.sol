@@ -74,32 +74,95 @@
  */
  
  
- pragma solidity ^0.4.18;
+pragma solidity ^0.4.18;
  
+contract ManageAccount
+{
+    struct Account
+    {
+        bytes8 id;
+        uint point;
+    }
+    mapping (address => Account) account;
+    address[] public listAddressAccount;
+    
+    event LOGaccountInfo(bytes8 id, address addr, uint point);
+    
+   function ManageAccount() public
+   {
+       //listAddrAcc = [msg.sender];
+   }
+   
+    modifier validID(bytes8 _id)
+    {
+         for(uint i = 0; i < listAddressAccount.length; i++)
+        {
+            if(account[listAddressAccount[i]].id == _id)
+            {
+                revert();
+            }
+        }
+        _;
+    }
+    modifier validAddr()
+    {
+        for(uint i = 0; i < listAddressAccount.length; i++)
+        {
+            if(msg.sender == listAddressAccount[i])
+            {
+                revert();
+            }
+        }
+        _;
+    }
+    
+    function createAcc(bytes8 _id) 
+        validID(_id)
+        validAddr
+        public returns(bool)
+    {
+        Account memory temp;
+        temp.id = _id;
+        temp.point = 0;
+        account[msg.sender] = temp;
+        listAddressAccount.push(msg.sender);
+         LOGaccountInfo(temp.id, msg.sender, temp.point);
+        return true;
+    }
+    function getListAccounts() public view returns(address[])
+    {
+        return listAddressAccount;
+    }
+    function getAccountInfo() public view returns(bytes8)
+    {
+        return account[msg.sender].id;
+    }
+}
  
- 
- contract votingVer1_3_2
+contract voting is ManageAccount
  {
     room[] rooms;
+
     
     struct room
     {
         address owner;
         uint id;
         string title;
+        string descript;
         bool privateRoom;
         Poll[] poll;
-        string descript;
         ListVoters listVoters;
         uint expiredTime;
         bool open;
+        mapping(bytes32 => address[]) listVotersOf;
     }
 
     struct Voter
     {
-        uint point;
-        mapping(uint => bytes32[]) voteFor;//roomID => ballot
-        mapping(uint => bool) voted;//roomID => ballot
+
+        bytes32[] ballot;//roomID => ballot
+        bool voted;//roomID => ballot
     }
     
     // struct Ballot
@@ -118,10 +181,8 @@
     {
         string questions;
         bytes32[] options;
-        mapping(bytes32 => address[]) listVotersOf;
         //bytes32[] res;
     }
-
     
     event LOGroomOpened(uint indexed roomID, address indexed owner,string title, string descript, bool privateRoom, uint expiredTime);
     event LOGaddListVoter(uint indexed roomID, address[] list);
@@ -134,6 +195,8 @@
     event LOGroomResult(uint indexed roomID, bytes option, uint counts, address[] voters);
     
     event LOGvoteNotify(uint indexed roomID, address indexed sender, bytes32[] options);
+    event LOGcountOf(uint roomID, uint pollNo, bytes32 option, uint count);
+    event LOGvoterOf(uint roomID, uint pollNo, bytes32 option, address[] voter);
     
     
     modifier owned(uint _RoomID)
@@ -167,7 +230,7 @@
         _;
     }
     
-    modifier validOption(uint _roomID, bytes32[] _option)
+    modifier validBallot(uint _roomID, bytes32[] _option)
     {
         if(_option.length != getNumberOfPolls(_roomID))
         {
@@ -190,12 +253,44 @@
         }
         _;
     }
-    modifier notVoted(uint _roomID, address addr)
+    
+    modifier duplicateOption(bytes32[] _options)
     {
-        require(!rooms[_roomID].listVoters.voter[addr].voted[_roomID]);
+        for(uint i = 0; i < _options.length-1; i++)
+        {
+            if(_options[i] == _options[i++])
+            {
+                revert();
+            }
+        }
         _;
     }
-    function votingVer1_3_2()
+    
+    modifier notVoted(uint _roomID)
+    {
+        require(!rooms[_roomID].listVoters.voter[msg.sender].voted);
+        _;
+    }
+    
+    function checkVailableVoter(uint _roomID, address _voter) public view returns(bool)
+    {
+        for(uint i= 0; i < rooms[_roomID].listVoters.addrs.length ; i++)
+            {
+                if(_voter == rooms[_roomID].listVoters.addrs[i])
+                {
+                   return true;
+                }
+            }
+        return false;
+    }
+    
+    modifier vailableVoter(uint _roomID, address _voter)
+    {
+         require(checkVailableVoter(_roomID, _voter));
+        _;
+    }
+    
+    function voting()
         public 
     {
         
@@ -212,27 +307,22 @@
         rooms[id].privateRoom = _privateR;
         rooms[id].expiredTime = _expiredTime;
         rooms[id].open = true;
-        LOGroomOpened(id, rooms[id].owner,rooms[id].title, rooms[id].descript, rooms[id].privateRoom, rooms[id].expiredTime);
+         LOGroomOpened(id, rooms[id].owner,rooms[id].title, rooms[id].descript, rooms[id].privateRoom, rooms[id].expiredTime);
     }
     
     function addPoll(uint _roomID, string _quest, bytes32[] _opt) 
             owned(_roomID)
+            duplicateOption(_opt)
             roomOpening(_roomID)
             public returns(uint pollNo)
     {
         pollNo = rooms[_roomID].poll.length;
         rooms[_roomID].poll.length++;
         rooms[_roomID].poll[pollNo].questions = _quest;
-        addPollOption(_roomID, pollNo, _opt);
-        LOGpollingAdded(_roomID, pollNo, rooms[_roomID].poll[pollNo].questions, rooms[_roomID].poll[pollNo].options);
+        rooms[_roomID].poll[pollNo].options = _opt;
+         LOGpollingAdded(_roomID, pollNo, rooms[_roomID].poll[pollNo].questions, rooms[_roomID].poll[pollNo].options);
     }
 
-    function addPollOption(uint _id, uint _pollNo, bytes32[] _opt) 
-            private
-    {
-        rooms[_id].poll[_pollNo].options = _opt;
-    }
-    
     function getNumberOfPolls(uint _roomID) public view returns(uint)
     {
         return rooms[_roomID].poll.length;
@@ -243,14 +333,17 @@
             roomOpening(_id) public returns (bool)
     {
         rooms[_id].open = false;
+        for(uint i = 0; i < rooms[_id].poll.length; i++)
+        {
+            for(uint j = 0; j < rooms[_id].poll[i].options.length; j++)
+            {
+               LOGcountOf(_id, j, rooms[_id].poll[i].options[j], rooms[_id].listVotersOf[rooms[_id].poll[i].options[j]].length);  
+               LOGvoterOf(_id, j, rooms[_id].poll[i].options[j], rooms[_id].listVotersOf[rooms[_id].poll[i].options[j]]);
+            }
+        }
         //calculateRoomResult(_id);
        // LOGroomClosed(rooms[_id].id, rooms[_id].result);
         return true;
-    }
-    
-    function checkOpen(uint _id) private view returns(bool)
-    {
-        return rooms[_id].open;
     }
     
     function setListVoters(uint _id, address[] _voters) 
@@ -260,81 +353,87 @@
             public returns (bool)
     {
         rooms[_id].listVoters.addrs = _voters;
-        LOGaddListVoter(rooms[_id].id, rooms[_id].listVoters.addrs);
+         LOGaddListVoter(rooms[_id].id, rooms[_id].listVoters.addrs);
         return true;
     }
- 
-    
-    function voteForPrivateRoom(uint _roomID, bytes32[] _option)
-        roomOpening(_roomID)
-        notVoted(_roomID, msg.sender)
-        validOption(_roomID, _option)
+
+    function voteForPrivateRoom(uint _roomID, bytes32[] _options)
+        vailableVoter(_roomID, msg.sender)
         private 
     {
-         for(uint i= 0; i < rooms[_roomID].listVoters.addrs.length ; i++)
-            {
-                if(msg.sender == rooms[_roomID].listVoters.addrs[i])
-                {
-                    rooms[_roomID].listVoters.voter[msg.sender].voteFor[_roomID] = _option;
-                    rooms[_roomID].listVoters.voter[msg.sender].voted[_roomID] = true;
-                    rooms[_roomID].listVoters.voter[msg.sender].point ++;
-                    LOGvoteNotify(rooms[_roomID].id, rooms[_roomID].listVoters.addrs[i], rooms[_roomID].listVoters.voter[msg.sender].voteFor[_roomID]);
-                    return;
-                }
-            }
-            revert();
+        rooms[_roomID].listVoters.voter[msg.sender].ballot = _options;
+        rooms[_roomID].listVoters.voter[msg.sender].voted = true;
+        //rooms[_roomID].listVoters.addrs.push(msg.sender);
+        account[msg.sender].point++;
+        //rooms[_roomID].listVoters.voter[msg.sender].account.acount[msg.sender].point ++;
+        addToListVoteOf(_roomID, _options);
+         LOGvoteNotify(rooms[_roomID].id, msg.sender, rooms[_roomID].listVoters.voter[msg.sender].ballot);
+         LOGaccountInfo(account[msg.sender].id, msg.sender, account[msg.sender].point);
     }
-    
-    function voteFor(uint _roomID, bytes32[] _option)
+
+    function voteFor(uint _roomID, bytes32[] _options)
         roomOpening(_roomID)
-        notVoted(_roomID, msg.sender)
-        validOption(_roomID, _option)
+        notVoted(_roomID)
+        validBallot(_roomID, _options)
         public
     {
-        //require(!rooms[_roomID].listVoters.voter[msg.sender].ballot[_roomID].voted);
         if(rooms[_roomID].privateRoom)
         {
-            voteForPrivateRoom(_roomID, _option);
+            voteForPrivateRoom(_roomID, _options);
+            return;
         }
-        rooms[_roomID].listVoters.voter[msg.sender].voteFor[_roomID] = _option;
-        rooms[_roomID].listVoters.voter[msg.sender].voted[_roomID] = true;
-        rooms[_roomID].listVoters.voter[msg.sender].point ++;
-        LOGvoteNotify(rooms[_roomID].id, msg.sender, rooms[_roomID].listVoters.voter[msg.sender].voteFor[_roomID]);
+        rooms[_roomID].listVoters.voter[msg.sender].ballot = _options;
+        rooms[_roomID].listVoters.voter[msg.sender].voted = true;
+        rooms[_roomID].listVoters.addrs.push(msg.sender);
+        account[msg.sender].point++;
+       // rooms[_roomID].listVoters.voter[msg.sender].account.point ++;
+        addToListVoteOf(_roomID, _options);
+         LOGvoteNotify(rooms[_roomID].id, msg.sender, rooms[_roomID].listVoters.voter[msg.sender].ballot);
+         LOGaccountInfo(account[msg.sender].id, msg.sender, account[msg.sender].point);
+    }
+    
+    function addToListVoteOf(uint _roomID, bytes32[] _option) private 
+    {
+        for(uint i=0; i <  _option.length; i++)
+        {
+            rooms[_roomID].listVotersOf[_option[i]].push(msg.sender);
+            // LOGcountOf(_roomID, i, _option[i], rooms[_roomID].listVotersOf[_option[i]].length);
+        }
+    }
+    
+    function setListVotersByID(uint _roomID, bytes8[] _ids) 
+            owned(_roomID)
+            roomOpening(_roomID)
+            privateRoom(_roomID)
+            public returns (bool)
+    {
+        for(uint i = 0; i < listAddressAccount.length; i++)
+        {
+            for(uint j = 0; j < _ids.length; j++)
+            {
+                if(account[listAddressAccount[i]].id == _ids[j])
+                {
+                    rooms[_roomID].listVoters.addrs.push(listAddressAccount[i]);
+                }
+            }
+        }
+         LOGaddListVoter(rooms[_roomID].id, rooms[_roomID].listVoters.addrs);
+        return true;
+    }
+    function getListVoterOf(uint _roomID) public view returns(address[])
+    {
+        return  rooms[_roomID].listVoters.addrs;
+    }
+    
+    function getVoterPoint() public view returns(uint)
+    {
+        return account[msg.sender].point;
     }
     // function getCountOf(uint _roomID, uint _pollNo, bytes32 _option) public view returns(uint)
     // {
     //     return rooms[_roomID].poll[_pollNo].listVotersOf[_option].length;
     // }
-    // function VoteFor(uint _id, bytes _option) 
-    //             roomOpening(_id)
-    //             // validOption(_option) 
-    //             // notVoted(msg.sender)  
-    //             //hasVoter(msg.sender)
-    //             public returns (bool)
-    // {   
-    //     if(rooms[_id].privateRoom)
-    //     {
-    //         for(uint i= 0; i < rooms[_id].listVoters.Addrs.length ; i++)
-    //         {
-    //             if(msg.sender == rooms[_id].listVoters.Addrs[i])
-    //             {
-    //                 rooms[_id].listVoters.voter[msg.sender].ballot[msg.sender] = _option;
-    //                 rooms[_id].listVotersOf[_option].push(msg.sender);
-    //                 rooms[_id].listVoters.voter[msg.sender].voted = true;
-    //                 rooms[_id].listVoters.voter[msg.sender].point[msg.sender]++;
-    //                 LOGvoteNotify(rooms[_id].id,msg.sender, rooms[_id].listVoters.voter[msg.sender].ballot[msg.sender]);
-    //             }
-    //         }
-    //         revert();
-    //         return false;
-    //     }
-    //     rooms[_id].listVoters.voter[msg.sender].ballot[msg.sender] = _option;
-    //     rooms[_id].listVoters.voter[msg.sender].voted = true;
-    //     rooms[_id].listVotersOf[_option].push(msg.sender);
-    //     rooms[_id].listVoters.voter[msg.sender].point[msg.sender]++;
-    //     LOGvoteNotify(rooms[_id].id,msg.sender, rooms[_id].listVoters.voter[msg.sender].ballot[msg.sender]);
-    //     return true;
-    // }
+
     // function calculateRoomResult(uint _id) private returns(bytes)
     // {
     //     bytes memory res;
@@ -421,29 +520,6 @@
 //         }
 //         return false;
 //     }
-
-//     modifier validInitiate(bytes32[] _option) 
-//     {
-//         if(_option.length != 0)
-//         {
-//             require(checkInitiateOption(_option));    
-//         }
-        
-//         _;    
-//     }
-//     modifier validOption(bytes32 _option)
-//     {
-//         require(!checkVailableOption(_option));
-//         _;
-       
-//     }
-//     modifier notVoted(address _addr)
-//     {
-       
-//         require(voted[_addr] == false);
-//         _;
-       
-//     }
 //     // modifier validVoter(address _addr)
 //     // {
 //     //     require(checkVailableVoter(_addr));
@@ -507,4 +583,4 @@
         }
         return string(bytesStringTrimmed);
     }
- }
+}

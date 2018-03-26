@@ -63,7 +63,7 @@ export class VoteroomsComponent implements OnInit {
 
   getAcc() {
     let self = this;
-    this._connectService.AccountContract
+    this._connectService.VotingContract
       .deployed()
       .then(function (temp) {
         temp.getListAddrAcc()
@@ -80,7 +80,7 @@ export class VoteroomsComponent implements OnInit {
   getInfo() {
     let minhminh = this;
     let strtemp;
-    this._connectService.AccountContract
+    this._connectService.VotingContract
       .deployed()
       .then(function (temp) {
         temp.getFullAcc('0x02d7db067f0c2bbcd32242a56625611f1c0d7c8a')

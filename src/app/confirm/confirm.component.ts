@@ -35,7 +35,7 @@ export class ConfirmComponent implements OnInit {
 
   watchEvent() {
     let self = this;
-    this._ConnectService.AccountContract
+    this._ConnectService.VotingContract
       .deployed()
       .then(function (temp) {
         var events = temp.allEvents({ fromBlock: 0, toBlock: 'lastest' });

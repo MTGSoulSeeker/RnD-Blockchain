@@ -4,7 +4,7 @@
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <h1>Register Form</h1>
         <form #f="ngForm" novalidate (ngSubmit)="createAccount(f.value, f.valid)">
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label class="control-label required" for="">Name</label>
             <sup style="color:red">*</sup>
             <input type="text" class="form-control" name="username" [ngModel]="user.username" required minlength="5" maxlength="20" #username="ngModel"
@@ -12,7 +12,7 @@
             <small [hidden]="username.valid || (username.pristine && !f.submitted)" class="text-danger">
               Name is required (5-20 characters), only alphabets and number are allowed.
             </small>  
-          </div>
+          </div> -->
           <div class="form-group">
             <label class="control-label required" for="">ID</label>
             <sup style="color:red">*</sup>

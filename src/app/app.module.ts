@@ -34,6 +34,8 @@ import { ResultComponent } from './result/result.component';
 import { RoomcreateComponent } from './roomcreate/roomcreate.component';
 import { TestComponent } from './test/test.component';
 import { StatusComponent } from './status/status.component';
+import { UserinfoComponent } from './userinfo/userinfo.component';
+import { ErrorComponent } from './error/error.component';
 
 @NgModule({
   declarations: [
@@ -54,7 +56,9 @@ import { StatusComponent } from './status/status.component';
     ResultComponent,
     RoomcreateComponent,
     TestComponent,
-    StatusComponent
+    StatusComponent,
+    UserinfoComponent,
+    ErrorComponent
   ],
   imports: [
     BrowserModule,

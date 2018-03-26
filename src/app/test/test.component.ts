@@ -18,11 +18,19 @@ export class TestComponent implements OnInit {
   VotingContract = contract(VotingABI);
   AccountContract = contract(AccountABI);
   isLoaded = false;
+  tempstr: string="";
+  listVoter: string[] = [];
 
   constructor() {
     this.web3 = new web3(new web3.providers.HttpProvider('http://127.0.0.1:8545'));
     this.VotingContract.setProvider(this.web3.currentProvider);
     this.AccountContract.setProvider(this.web3.currentProvider);
+  }
+
+  check(){
+    this.listVoter = this.tempstr.split(";");
+
+    console.log(this.listVoter);
   }
 
   @HostListener('window:load')
