@@ -1,11 +1,3 @@
-.error-bg {
-  /* background-image: url('../../assets/images/background-image.png'); */
-  /* color: #fff; */
-  font-family: "Open Sans", sans-serif;
-  height: 730px;
-  overflow: hidden;
-}
-
 .c {
   text-align: center;
   display: block;
@@ -53,7 +45,7 @@
 }
 
 .btn {
-  background-color: rgb(255, 255, 255);
+  background-color: rgb( 255, 255, 255);
   position: relative;
   display: inline-block;
   width: 358px;
@@ -63,7 +55,7 @@
   margin: 0 auto;
   color: #33cc99;
   text-decoration: none;
-  margin-right: 10px;
+  margin-right: 10px
 }
 
 .right {
@@ -75,7 +67,7 @@ hr {
   padding: 0;
   border: none;
   border-top: 5px solid rgb(0, 0, 0);
-  /* color: #fff; */
+  color: rgb(0, 0, 0);
   text-align: center;
   margin: 0px auto;
   width: 420px;
@@ -86,12 +78,12 @@ hr {
 .cloud {
   width: 350px;
   height: 120px;
-  background: #fff;
-  background: linear-gradient(to bottom, #fff 100%);
-  background: -webkit-linear-gradient(top, #fff 100%);
-  background: -moz-linear-gradient(top, #fff 100%);
-  background: -ms-linear-gradient(top, #fff 100%);
-  background: -o-linear-gradient(top, #fff 100%);
+  background: #adc!important;
+  background: linear-gradient(to bottom, #adc 100%);
+  background: -webkit-linear-gradient(top, #adc 100%);
+  background: -moz-linear-gradient(top, #adc 100%);
+  background: -ms-linear-gradient(top, #adc 100%);
+  background: -o-linear-gradient(top,#adc 100%);
   border-radius: 100px;
   -webkit-border-radius: 100px;
   -moz-border-radius: 100px;
@@ -103,10 +95,10 @@ hr {
 
 .cloud:after,
 .cloud:before {
-  content: "";
+  content: '';
   position: absolute;
-  background: #fff;
-  z-index: -1;
+  background: #adc;
+  z-index: -1
 }
 
 .cloud:after {
@@ -166,7 +158,7 @@ hr {
 
 .x3 {
   left: 250px;
-  bottom: -70px;
+  bottom: 300px;
   -webkit-transform: scale(0.6);
   -moz-transform: scale(0.6);
   transform: scale(0.6);

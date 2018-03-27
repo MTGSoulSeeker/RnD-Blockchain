@@ -1,12 +1,14 @@
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
-
-declare var window: any;
-const web3 = require('web3');
-const contract = require('truffle-contract');
-const VotingABI = require('../../../build/contracts/votingVer1_3_2.json');
-const AccountABI = require('../../../build/contracts/ManageAccount.json');
-
+import { ConnectService } from '../connect.service';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/startWith';
+import 'rxjs/add/observable/merge';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/observable/of';
+import 'rxjs/add/operator/debounceTime';
+import 'rxjs/add/operator/distinctUntilChanged';
+import 'rxjs/add/observable/fromEvent';
 @Component({
   selector: 'app-test',
   templateUrl: './test.component.html',
@@ -14,30 +16,15 @@ const AccountABI = require('../../../build/contracts/ManageAccount.json');
 })
 export class TestComponent implements OnInit {
 
-  web3: any;
-  VotingContract = contract(VotingABI);
-  AccountContract = contract(AccountABI);
   isLoaded = false;
-  tempstr: string="";
+  tempstr: string = "";
   listVoter: string[] = [];
 
-  constructor() {
-    this.web3 = new web3(new web3.providers.HttpProvider('http://127.0.0.1:8545'));
-    this.VotingContract.setProvider(this.web3.currentProvider);
-    this.AccountContract.setProvider(this.web3.currentProvider);
-  }
-
-  check(){
-    this.listVoter = this.tempstr.split(";");
-
-    console.log(this.listVoter);
-  }
-
-  @HostListener('window:load')
-  windowLoaded() {
+  constructor(private Connect: ConnectService) {
   }
 
   ngOnInit() {
+    this.getResult();
   }
 
   displayedColumns = ['addr', 'options'];
@@ -52,9 +39,12 @@ export class TestComponent implements OnInit {
    * be able to query its view for the initialized sort.
    */
   ngAfterViewInit() {
-    // this.getResult();
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
+  }
+  //Delay function
+  delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   toHex(hexx) {
@@ -66,27 +56,31 @@ export class TestComponent implements OnInit {
     return tempstr;
   }
 
-  // getResult(): void {
-  //   let self = this;
+  getResult(): Observable<Result[]> {
+    let self = this;
+    this.delay(5000);
 
-  //   this.VotingContract
-  //     .deployed()
-  //     .then(function (temp) {
-  //       var events = temp.allEvents({ fromBlock: 0, toBlock: 'lastest' });
-  //       events.watch(function (error, log) {
-  //         if (log.event == "LOGvoteNotify" && log.args.roomID == 0) {
-  //           let tempstr: string[] = [];
-  //           for (let i = 0; i < log.args.options.length; i++) {
-  //             tempstr.push(self.toHex(log.args.options[i]));
-  //           }
-  //           self.resultInfo.push({ addr: log.args.sender, options: log.args.options[0] })
-  //         }
-  //       });
-  //     });
-  //   self.dataSource = new MatTableDataSource (self.resultInfo);
-  //   console.log(self.resultInfo);
-  //   console.log(self.dataSource.data);
-  // }
+    this.Connect.VotingContract
+      .deployed()
+      .then(function (temp) {
+        var events = temp.allEvents({ fromBlock: 0, toBlock: 'lastest' });
+        events.watch(function (error, log) {
+          if (log.event == "LOGvoteNotify" && log.args.roomID == 1) {
+            let tempstr: string[] = [];
+            for (let i = 0; i < log.args.options.length; i++) {
+              tempstr.push(self.toHex(log.args.options[i]));
+            }
+            self.resultInfo.push({ addr: log.args.sender, options: log.args.options[0] })
+          }
+        });
+        self.isLoaded = true;
+      });
+    console.log(self.isLoaded);
+    self.dataSource = new MatTableDataSource(self.resultInfo);
+    console.log(self.resultInfo);
+    console.log(self.dataSource.data);
+    return
+  }
 
 }
 
@@ -101,6 +95,7 @@ export interface Element {
   weight: number;
   symbol: string;
 }
+const Table_Data: Result[] = this.resultInfo;
 
 const ELEMENT_DATA: Element[] = [
   { position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H' },

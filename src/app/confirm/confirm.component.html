@@ -3,7 +3,7 @@
     Confirm your action
   </h2>
   <hr>
-  <form #f="ngForm" novalidate (ngSubmit)="onCloseConfirm(f.value, f.valid)">
+  <form #f="ngForm" novalidate (ngSubmit)="onCloseConfirm(f.value)">
     <strong>{{data}}</strong>
     <br> 
     Please log in to confirm your action!

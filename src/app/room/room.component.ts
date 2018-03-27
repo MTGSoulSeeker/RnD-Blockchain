@@ -10,8 +10,6 @@ import { multiChoice } from '../test/multipleChoice';
 import { Choices } from './choices';
 import { StatusComponent } from '../status/status.component';
 
-declare var window: any;
-
 @Component({
   selector: 'app-room',
   templateUrl: './room.component.html',
@@ -47,13 +45,6 @@ export class RoomComponent implements OnInit {
     this.getOption();
   }
 
-  //Get Info and Multi Questions and Options by ID, create temp data for Multi Questions and Options by ID
-  @HostListener('window:load')
-  windowLoaded() {
-    this.getRoom();
-    this.getOption();
-  }
-
   //Function to go back the previous page
   goBack(): void {
     this.location.back();
@@ -83,7 +74,6 @@ export class RoomComponent implements OnInit {
       data: 'Make sure that you choose the right options!'
     });
     dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog closed:` + result.status);
       if (result.status == "Success") {
         this.vote(result.user, result.pass);
       }
@@ -104,8 +94,6 @@ export class RoomComponent implements OnInit {
     });
 
     dialogRef01.afterClosed().subscribe(result => {
-      console.log(`Dialog closed:` + result.status);
-      console.log(result.user);
       if (result.status == "Success") {
         this.checkResult(id, result.user);
       }
@@ -181,7 +169,6 @@ export class RoomComponent implements OnInit {
     //Get option and check if there is any missing question
     for (let i = 0; i < this.tempMultiChoice.length; i++) {
       if (this.tempMultiChoice[i].option == "") {
-        console.log("have empty option");
         loading = false;
         informResult = self.dialog.open(StatusComponent, {
           width: '600px',
@@ -195,7 +182,6 @@ export class RoomComponent implements OnInit {
     //Check whether you have enough money or not
     if (self._connectService.web3.eth.getBalance(user) * 1 < 1) {
       loading = false;
-      console.log(self._connectService.web3.eth.getBalance(user));
       informResult = self.dialog.open(StatusComponent, {
         width: '600px',
         data: { Dloading: loading, Ddetail: "You don't have enough money to do this transaction" }

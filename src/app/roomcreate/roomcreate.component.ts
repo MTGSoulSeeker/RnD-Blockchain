@@ -14,21 +14,19 @@ import { StatusComponent } from '../status/status.component';
 
 export class RoomcreateComponent implements OnInit {
 
-  multipleChoice: multiChoice[] = [];
-  room: RoomCreation;
   temp: RoomCreation;
+  room: RoomCreation;
+  multipleChoice: multiChoice[] = [];
   flag: string;
   tempListVoter: string = "";
   listVoter: string[] = [];
 
-  constructor(private _connectService: ConnectService, public dialog: MatDialog) {
-    this.multipleChoice = [];
+  constructor(private Connect: ConnectService, public dialog: MatDialog) {
   }
 
+  // Split and Remove space => input an array
   generateListVoter() {
     this.listVoter = this.tempListVoter.replace(/\s/g, '').split(";");
-    console.log(this.tempListVoter);
-    console.log(this.listVoter);
   }
 
   ngOnInit() {
@@ -49,16 +47,19 @@ export class RoomcreateComponent implements OnInit {
     this.flag = null;
   }
 
+  //Change Color Button
   onSelect(select) {
     this.temp.type = select;
   }
 
-  openDialog(ROOM: RoomCreation, isValid: boolean) {
+  //Confirm before create a room
+  openDialog(ROOM: RoomCreation) {
     let self = this;
     let epoch = new Date(ROOM.dateEnd).getTime();
     self.room.title = ROOM.title;
     self.room.description = ROOM.description;
     self.room.dateEnd = epoch;
+
     if (ROOM.type == "Private") {
       self.room.type = 1;
     }
@@ -70,26 +71,20 @@ export class RoomcreateComponent implements OnInit {
       width: '600px',
       data: 'Please Login to confirm your decision'
     });
+
     dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog closed:` + result.status);
       if (result.status == "Success") {
-        this.createRoom(self.room, result.user);
+        this.createRoom(self.room, result.addr);
       }
     });
-
-    self.temp.title = ' ';
-    self.temp.description = ' ';
-    self.temp.dateEnd = ' ';
-    self.temp.type = 'Public';
   }
 
+  //Create a room
   createRoom(ROOM: RoomCreation, user) {
     let id: string;
     let self = this;
     let loading: boolean = true; //Check if it is running or not
     let x: multiChoice[] = self.multipleChoice;
-    console.log(x)
-    console.log(ROOM);
 
     let submitTrans = this.dialog.open(StatusComponent, {
       width: '600px',
@@ -97,27 +92,20 @@ export class RoomcreateComponent implements OnInit {
       disableClose: true
     });
 
-    this._connectService.VotingContract
+    this.Connect.VotingContract
       .deployed()
       .then(function (temp) {
         temp.openRoom(ROOM.title, ROOM.type, ROOM.description, ROOM.dateEnd, { from: user, gas: 1000000 })
           .then(function (v) {
-            self._connectService.VotingContract
+            self.Connect.VotingContract
               .deployed()
               .then(function (temp02) {
-                console.log(v.logs[0].args.roomID.toString());
                 for (let z = 0; z < x.length; z++) {
                   temp02.addPoll(v.logs[0].args.roomID.toString(), x[z].question, x[z].options, { from: user, gas: 1000000 })
-                    .then(function (v02) {
-                      console.log(v02);
-                    })
                 }
                 if (ROOM.type == 1) {
                   self.generateListVoter();
                   temp02.setListVotersByID(v.logs[0].args.roomID.toString(), self.listVoter, { from: user, gas: 1000000 })
-                    .then(function (v02) {
-                      console.log(v02);
-                    })
                 }
               })
             loading = false;
@@ -132,36 +120,33 @@ export class RoomcreateComponent implements OnInit {
           });
       });
 
+    self.temp.title = ' ';
+    self.temp.description = ' ';
+    self.temp.dateEnd = ' ';
+    self.temp.type = 'Public';
     self.multipleChoice = [];
-
   }
 
-
+  //Create Question with Zero Option
   inputQuantity(n: number) {
     this.multipleChoice = [];
     for (let i = 0; i < n; i++) {
       this.multipleChoice.push({ id: i, question: null, options: [] });
     }
-    console.log(this.multipleChoice);
   }
 
+  //Create N Options for Question[i]
   inputQuantity02(i: number, n: number) {
     this.multipleChoice[i].options = [];
     console.log(i);
     for (let x = 0; x < n; x++) {
       this.multipleChoice[i].options[x] = null;
     }
-    console.log(this.multipleChoice[i].options);
   }
 
+  //Get information in ngFor
   customTrackBy(index: number, obj: any): any {
     return index;
   }
-
-  showValue(a, b) {
-    console.log(a);
-    console.log(this.multipleChoice)
-  }
-
 
 }

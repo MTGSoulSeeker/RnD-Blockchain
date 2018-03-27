@@ -28,7 +28,6 @@ import { EqualValidator } from './register/equal-validator.directive';
 import { ContactComponent } from './contact/contact.component';
 import { FaqComponent } from './faq/faq.component';
 import { RoomComponent } from './room/room.component';
-import { DialogConfirmComponent } from './dialog-confirm/dialog-confirm.component';
 import { ConfirmComponent } from './confirm/confirm.component';
 import { ResultComponent } from './result/result.component';
 import { RoomcreateComponent } from './roomcreate/roomcreate.component';
@@ -50,7 +49,6 @@ import { ErrorComponent } from './error/error.component';
     ContactComponent,
     FaqComponent,
     RoomComponent,
-    DialogConfirmComponent,
     ConfirmComponent,
     filterPipe,
     ResultComponent,

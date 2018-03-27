@@ -1,7 +1,9 @@
-var votingVer1_3_2 = artifacts.require("./votingVer1_3_2.sol");
-var ManageAccount_1_0_1 = artifacts.require("./ManageAccount_1_0_1.sol");
+var voting12 = artifacts.require("./voting12.sol");
+var ManageAccount12 = artifacts.require("./ManageAccount12.sol");
 
 module.exports = function(deployer) {
-  deployer.deploy(votingVer1_3_2, {gas: 4700000});
-  deployer.deploy(ManageAccount_1_0_1, {gas: 4700000});
+  deployer.deploy(ManageAccount12, {gas: 4700000});
+  deployer.link(ManageAccount12, voting12);
+  deployer.deploy(voting12, {gas: 4700000});
+  
 };

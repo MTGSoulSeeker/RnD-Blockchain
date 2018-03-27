@@ -8,7 +8,6 @@ import { RegisterComponent } from './register/register.component';
 import { ContactComponent } from './contact/contact.component';
 import { FaqComponent } from './faq/faq.component';
 import { RoomComponent } from './room/room.component';
-import { DialogConfirmComponent } from './dialog-confirm/dialog-confirm.component';
 import { ResultComponent } from './result/result.component';
 import { RoomcreateComponent } from './roomcreate/roomcreate.component';
 import { TestComponent } from './test/test.component';

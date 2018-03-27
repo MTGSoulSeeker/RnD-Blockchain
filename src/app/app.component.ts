@@ -1,7 +1,6 @@
 import { Component, OnInit, HostListener, NgZone } from '@angular/core';
 import { ConnectService } from './connect.service';
 
-declare var window: any;
 
 @Component({
   selector: 'app-root',
@@ -11,13 +10,7 @@ declare var window: any;
 
 export class AppComponent {
 
-  constructor(private Connect: ConnectService){
+  constructor(){
 
-  }
-
-  @HostListener('window:load')
-  windowLoaded() {
-    this.Connect.checkAndInstantiateWeb3();
-    this.Connect.onReady();
   }
 }

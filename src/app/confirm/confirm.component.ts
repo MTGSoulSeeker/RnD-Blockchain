@@ -2,7 +2,6 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material';
 import { MatDialogRef } from '@angular/material';
 import { ConnectService } from '../connect.service';
-import { Observable } from 'rxjs/Rx';
 import { StatusComponent } from '../status/status.component';
 
 export class acc {
@@ -18,10 +17,9 @@ export class acc {
 export class ConfirmComponent implements OnInit {
 
   listAcc: acc[] = [];
-  temp = false;
-  account = { user: "", pass: "", status: "" };
+  account = { addr: "", status: "" };
 
-  constructor(public thisDialogRef: MatDialogRef<ConfirmComponent>, @Inject(MAT_DIALOG_DATA) public data: string, private _ConnectService: ConnectService) {
+  constructor(public DialogRef: MatDialogRef<ConfirmComponent>, @Inject(MAT_DIALOG_DATA) public data: string, private Connect: ConnectService) {
 
   }
 
@@ -29,25 +27,27 @@ export class ConfirmComponent implements OnInit {
     this.watchEvent();
   }
 
+  //Delay function
   delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
+  //Get all Registed Address with ID
   watchEvent() {
     let self = this;
-    this._ConnectService.VotingContract
+    this.Connect.VotingContract
       .deployed()
-      .then(function (temp) {
-        var events = temp.allEvents({ fromBlock: 0, toBlock: 'lastest' });
-
+      .then(function (evt) {
+        var events = evt.allEvents({ fromBlock: 0, toBlock: 'lastest' });
         events.watch(function (error, log) {
-
-          self.listAcc.push({ id: log.args.id, addr: log.args.addr });
-
-        })
+          if (log.event === "LOGaccountInfo") {
+            self.listAcc.push({ id: log.args.id, addr: log.args.addr });
+          }
+        });
       })
   }
 
+  //Convert String to Byte in order to compare ID
   convertStringToByte(string) {
     var result = "";
     var hextemp;
@@ -60,51 +60,37 @@ export class ConfirmComponent implements OnInit {
       result = result + "0";
     }
     result = "0x" + result
-    //console.log(result);
     return result
   }
 
-  async onCloseConfirm(value, isValid: boolean) {
+  //Login and pass data
+  async onCloseConfirm(value) {
+    let isValid = false;
     let tempID = this.convertStringToByte(value.username);
     for (let i = 0; i < this.listAcc.length; i++) {
       if (tempID == this.listAcc[i].id) {
-        this._ConnectService.web3.personal.unlockAccount(this.listAcc[i].addr, value.password, 15000, (err, res) => {
-          this.temp = res;
-          this.account.user = this.listAcc[i].addr;
+        this.Connect.web3.personal.unlockAccount(this.listAcc[i].addr, value.password, 15000, (err, res) => {
+          isValid = res;
+          this.account.addr = this.listAcc[i].addr;
         });
       }
     }
 
-    // if (this._ConnectService.web3.isAddress(value.username)) {
-    //   this._ConnectService.web3.personal.unlockAccount(value.username, value.password, 15000, (err, res) => {
-    //     this.temp = res;
-    //     console.log(this.temp);
-    //   });
-    // }
-    // else {
-    //   this.account.user = value.username;
-    //   this.account.pass = value.password;
-    //   this.account.status = "Wrong";
-    //   this.thisDialogRef.close(this.account);
-    //   return;
-    // }
-
-    await this.delay(2000);
-    if (this.temp) {
-      this.account.pass = value.password;
+    await this.delay(1000);
+    if (isValid) {
       this.account.status = "Success";
-      this.thisDialogRef.close(this.account);
+      this.DialogRef.close(this.account);
     }
     else {
-      this.account.pass = "";
       this.account.status = "Fail";
-      this.thisDialogRef.close(this.account);
+      this.DialogRef.close(this.account);
     }
   }
 
+  //Cancel the progress
   onCloseCancel() {
     this.account.status = "Cancel";
-    this.thisDialogRef.close(this.account);
+    this.DialogRef.close(this.account);
   }
 
 }

@@ -30,7 +30,6 @@ export class ResultComponent implements OnInit {
     this.getResult();
   }
 
-
   toHex(hexx) {
     let str = '';
     let tempstr = '';
@@ -61,46 +60,4 @@ export class ResultComponent implements OnInit {
         });
       });
   }
-
-  // displayedColumns = ['addr', 'options'];
-  // dataSource = new MatTableDataSource();
-
-  // @ViewChild(MatSort) sort: MatSort;
-  // @ViewChild(MatPaginator) paginator: MatPaginator;
-
-  // ngAfterViewInit() {
-  //   this.getResulttemp();
-  //   this.dataSource = new MatTableDataSource(this.data.Ddata);
-  //   this.dataSource.sort = this.sort;
-  //   this.dataSource.paginator = this.paginator;
-  // }
-
-  // getResulttemp(): void {
-  //   let self = this;
-
-  //   this._connectService.VotingContract
-  //     .deployed()
-  //     .then(function (temp) {
-  //       var events = temp.allEvents({ fromBlock: 0, toBlock: 'lastest' });
-  //       events.watch(function (error, log) {
-  //         if (log.event == "LOGvoteNotify" && log.args.roomID == 0) {
-  //           let tempstr: string[] = [];
-  //           for (let i = 0; i < log.args.options.length; i++) {
-  //             tempstr.push(self.toHex(log.args.options[i]));
-  //           }
-  //           self.resultInfo.push({ addr: log.args.sender, options: log.args.options[0] })
-  //         }
-  //       });
-  //     });
-  //   self.dataSource = new MatTableDataSource(self.resultInfo);
-  //   console.log(self.resultInfo);
-  //   console.log(self.dataSource.data);
-  // }
-
 }
-
-// export interface Resulttemp {
-//   addr: string;
-//   options: string;
-// }
-
