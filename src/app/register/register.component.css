@@ -1,4 +1,5 @@
 /*Text-Decoration*/
+
 h1,
 h2,
 h3,
@@ -28,8 +29,10 @@ a:hover {
 }
 
 /*Form Elements:*/
-.space-medium{
-  margin-top: 5%;
+
+.space-medium {
+  margin-top: 10%;
+  min-height: 550px;
 }
 
 .control-label {
@@ -42,7 +45,6 @@ a:hover {
 
 .form-control {
   border-radius: 0px;
-  color: #aca5a5;
   font-size: 12px;
   font-weight: 500;
   width: 100%;
@@ -50,7 +52,7 @@ a:hover {
   padding: 14px;
   line-height: 1.42857143;
   border: transparent;
-  background-color: #fff;
+  background-color: #e9ecef;
   letter-spacing: 1px;
   margin-bottom: 10px;
   -webkit-box-shadow: inset 0 0px 0px rgba(0, 0, 0, .075);

@@ -24,7 +24,6 @@ export class RoomComponent implements OnInit {
   multipleChoice: multiChoice[] = [];
   tempMultiChoice: Choices[] = [];
   flag: boolean = false;
-
   //Initialize a service to connect to blockchain, a dialog to open Popup, route to get ID and location to go back
   constructor(private _connectService: ConnectService, public dialog: MatDialog, private route: ActivatedRoute, private location: Location) {
   }
@@ -32,7 +31,7 @@ export class RoomComponent implements OnInit {
   //Create temp date for a Room
   ngOnInit() {
     this.room = {
-      id: '',
+      id: 0,
       title: '',
       description: '',
       dateCreated: '',
@@ -75,7 +74,7 @@ export class RoomComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result.status == "Success") {
-        this.vote(result.user, result.pass);
+        this.vote(result.addr, result.pass);
       }
       else {
         informResult = this.dialog.open(StatusComponent, {
@@ -202,7 +201,6 @@ export class RoomComponent implements OnInit {
       .then(function (temp) {
         temp.voteFor(self.room.id, options, { from: user, gas: 1000000 })
           .then(function (v) {
-            console.log(v);
             if (v.logs.length == 0) {
               loading = false;
               submitTrans.close();
@@ -219,6 +217,14 @@ export class RoomComponent implements OnInit {
                 data: { Ddetail: "Congratualation, your ballot has been successfully casted!" }
               });
             }
+          })
+          .catch(err => {
+            loading = false;
+            submitTrans.close();
+            let dialogRef = self.dialog.open(StatusComponent, {
+              width: '600px',
+              data: { Ddetail: "Error, There is something wrong, please check your balance and answer all questions." }
+            });
           })
       })
       .catch(err => {

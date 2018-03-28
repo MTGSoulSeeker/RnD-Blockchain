@@ -61,6 +61,18 @@ h4 {
   padding-right: 20px;
 }
 
+.blur {
+  filter: blur(20px) grayscale(50%);
+}
+
+.private {
+  text-align: center;
+  padding: 16% 2%;
+  max-height: 300px;
+  min-width: 120px;
+  font-size: 5em;
+}
+
 @media (max-width: 600px) {
   .module {
     font-size: 10px;

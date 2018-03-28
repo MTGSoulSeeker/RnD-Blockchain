@@ -73,6 +73,7 @@ export class RoomcreateComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
+      console.log(`Dialog closed:` + result.status);
       if (result.status == "Success") {
         this.createRoom(self.room, result.addr);
       }
@@ -91,6 +92,7 @@ export class RoomcreateComponent implements OnInit {
       data: { Dloading: loading },
       disableClose: true
     });
+
 
     this.Connect.VotingContract
       .deployed()
@@ -138,7 +140,6 @@ export class RoomcreateComponent implements OnInit {
   //Create N Options for Question[i]
   inputQuantity02(i: number, n: number) {
     this.multipleChoice[i].options = [];
-    console.log(i);
     for (let x = 0; x < n; x++) {
       this.multipleChoice[i].options[x] = null;
     }

@@ -17,7 +17,7 @@ export class acc {
 export class ConfirmComponent implements OnInit {
 
   listAcc: acc[] = [];
-  account = { addr: "", status: "" };
+  account = { addr: "", pass: "", status: "" };
 
   constructor(public DialogRef: MatDialogRef<ConfirmComponent>, @Inject(MAT_DIALOG_DATA) public data: string, private Connect: ConnectService) {
 
@@ -44,7 +44,10 @@ export class ConfirmComponent implements OnInit {
             self.listAcc.push({ id: log.args.id, addr: log.args.addr });
           }
         });
+        console.log(self.listAcc);
+
       })
+
   }
 
   //Convert String to Byte in order to compare ID
@@ -59,7 +62,7 @@ export class ConfirmComponent implements OnInit {
     for (let j = 0; j < a; j++) {
       result = result + "0";
     }
-    result = "0x" + result
+    result = "0x" + result;
     return result
   }
 
@@ -76,8 +79,10 @@ export class ConfirmComponent implements OnInit {
       }
     }
 
-    await this.delay(1000);
+    await this.delay(2000);
+
     if (isValid) {
+      this.account.pass = value.password;
       this.account.status = "Success";
       this.DialogRef.close(this.account);
     }

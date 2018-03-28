@@ -1,5 +1,5 @@
 export class Room {
-    id: string;
+    id: number;
     title: string;
     description: string;
     dateCreated: any;

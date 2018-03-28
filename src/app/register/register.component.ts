@@ -19,28 +19,39 @@ export class acc {
 export class RegisterComponent implements OnInit {
 
   listAcc: acc[] = [];
+  public user: User;
 
-  constructor(private _md5: Md5, private _connectService: ConnectService, public dialog: MatDialog) {
+  constructor(private _md5: Md5, private Connect: ConnectService, public dialog: MatDialog) {
 
   }
 
-  public user: User;
 
   ngOnInit() {
     this.user = {
-      // username: '',
       id: '',
       password: '',
       confirmPassword: ''
     }
     this.watchEvent();
-
   }
 
-  ngAfterContentInit() {
-    this.watchEvent();
+  //Get all Registed Address with ID
+  watchEvent() {
+    let self = this;
+    this.Connect.VotingContract
+      .deployed()
+      .then(function (temp) {
+        var events = temp.allEvents({ fromBlock: 0, toBlock: 'lastest' });
+
+        events.watch(function (error, log) {
+          if (log.event === "LOGaccountInfo") {
+            self.listAcc.push({ id: log.args.id, addr: log.args.addr });
+          }
+        })
+      })
   }
 
+  //Convert String to Byte in order to compare ID
   convertStringToByte(string) {
     var result = "";
     var hextemp;
@@ -52,16 +63,17 @@ export class RegisterComponent implements OnInit {
     for (let j = 0; j < a; j++) {
       result = result + "0";
     }
-    result = "0x" + result
-    //console.log(result);
+    result = "0x" + result;
     return result
   }
 
+  //Create account
   createAccount(tempUser: User, isValid: boolean) {
     var addr: any;
     var self = this;
     let loading: boolean = true; //Check if it is running or not
 
+    //Check duplicate
     var tempID = self.convertStringToByte(tempUser.id);
     for (let i = 0; i < self.listAcc.length; i++) {
       if (tempID == self.listAcc[i].id) {
@@ -80,19 +92,19 @@ export class RegisterComponent implements OnInit {
       data: { Dloading: loading },
     });
 
-    this._connectService.web3.personal.newAccount(tempUser.password, (err, res) => {
+    //Check Balance
+    this.Connect.web3.personal.newAccount(tempUser.password, (err, res) => {
       addr = res
-      this._connectService.web3.personal.unlockAccount(this._connectService.web3.eth.accounts[0], "123", 15000, () => {
-        this._connectService.web3.eth.sendTransaction({ from: this._connectService.web3.eth.accounts[0], to: addr, value: this._connectService.web3.toWei(10, "ether") },
+      this.Connect.web3.personal.unlockAccount(this.Connect.web3.eth.accounts[0], "123", 15000, () => {
+        this.Connect.web3.eth.sendTransaction({ from: this.Connect.web3.eth.accounts[0], to: addr, value: this.Connect.web3.toWei(10, "ether") },
           (err, res) => {
-            while (this._connectService.web3.eth.getBalance(addr) == 0) {
-              console.log("no money, fam");
+            while (this.Connect.web3.eth.getBalance(addr) == 0) {
+              console.log("Waiting...");
             }
 
-            this._connectService.web3.personal.unlockAccount(addr, tempUser.password, 15000, () => {
-              this._connectService.VotingContract.deployed()
+            this.Connect.web3.personal.unlockAccount(addr, tempUser.password, 15000, () => {
+              this.Connect.VotingContract.deployed()
                 .then(da => {
-                  // return da.createAcc(tempUser.username, tempUser.id, { from: addr, gas: 3000000 })
                   return da.createAcc(tempUser.id, { from: addr, gas: 1000000 })
                 })
                 .then(function (v) {
@@ -104,12 +116,6 @@ export class RegisterComponent implements OnInit {
                       data: { Dloading: loading, Ddetail: "Successful, your account is: " + tempUser.id }
                     });
                   }
-                  // else {
-                  //   let dialogRef = self.dialog.open(StatusComponent, {
-                  //     width: '600px',
-                  //     data: { Dloading: false, Ddetail: "Unfortunately, your account cannot be created. Please try again." }
-                  //   });
-                  // }
                 })
                 .catch(e => {
                   loading = false;
@@ -123,21 +129,6 @@ export class RegisterComponent implements OnInit {
         );
       });
     })
-  }
-
-  watchEvent() {
-    let self = this;
-    this._connectService.VotingContract
-      .deployed()
-      .then(function (temp) {
-        var events = temp.allEvents({ fromBlock: 0, toBlock: 'lastest' });
-
-        events.watch(function (error, log) {
-          if (log.event === "LOGaccountInfo") {
-            self.listAcc.push({ id: log.args.id, addr: log.args.addr });
-          }
-        })
-      })
   }
 
 }
