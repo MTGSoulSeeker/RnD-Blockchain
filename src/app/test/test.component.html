@@ -1,5 +1,5 @@
 <div class="container">
-  <!-- <div class="example-container mat-elevation-z8">
+  <div class="example-container mat-elevation-z8">
     <mat-table #table [dataSource]="dataSource" matSort>
 
       <ng-container matColumnDef="addr">
@@ -21,12 +21,11 @@
 
   <div *ngIf="isLoaded == false">
     <button class="btn btn-success" (click)="getResult()">Check result</button>
-  </div> -->
-  <!-- <input type="text" [(ngModel)]="tempstr">
-  <button type="button" (click)="check()">Check</button>
+  </div>
 
-  <b *ngFor="let x of listVoter">{{x}}</b> -->
-  <button type="button" (click)="getPrivateList()">Check</button>
+  <button class="btn btn-success" (click)="getClose()">Close</button>
+
+  <button class="btn btn-success" (click)="getTime()">Time</button>
 
 
 </div>

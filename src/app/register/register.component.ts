@@ -129,6 +129,12 @@ export class RegisterComponent implements OnInit {
         );
       });
     })
+
+    this.user = {
+      id: '',
+      password: '',
+      confirmPassword: ''
+    }
   }
 
 }

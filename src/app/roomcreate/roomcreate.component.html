@@ -94,19 +94,19 @@
               </div>
               <div *ngFor="let option of multipleChoice[i].options; let x = index; trackBy: customTrackBy">
                 <input class="form-control-colo" type="text" name="option" [(ngModel)]="multipleChoice[i].options[x]" placeholder="OPTION #{{x+1}}"
-                  #option="ngModel" required>
+                  #option="ngModel" maxlength="32" required>
               </div>
               <hr class="style">
             </div>
           </div>
           <button type="submit" class="btn btn-primary btn-block" [disabled]="!f.valid">CREATE</button>
-          <!-- <div class="margin-20" *ngIf="f">
+          <div class="margin-20" *ngIf="f">
             <div>Form details:-</div>
             <pre>Is form valid?: <br>{{f.valid | json}}</pre> 
             <pre>Is form submitted?: <br>{{f.submitted | json}}</pre>
             <pre>submitted value: <br>{{f.value | json}}</pre>
             <button type="button" (click)="generateListVoter()">Check</button>
-          </div> -->
+          </div>
         </form>
       </div>
     </div>

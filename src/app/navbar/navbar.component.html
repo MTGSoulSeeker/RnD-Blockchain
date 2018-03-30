@@ -54,12 +54,12 @@
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
           <form class="px-4 py-3" #f="ngForm" novalidate (ngSubmit)="login(f.value, f.valid)">
             <div class="form-group">
-              <label for="exampleDropdownFormEmail1">ID:</label>
-              <input type="text" class="form-control" name="id" [ngModel]="id" required>
+              <label>ID:</label>
+              <input type="text" class="form-control" name="id" [(ngModel)]="tempUser.id"  #id="ngModel" required>
             </div>
             <div class="form-group">
-              <label for="exampleDropdownFormPassword1">Password:</label>
-              <input type="password" class="form-control" name="password" [ngModel]="pass" required>
+              <label>Password:</label>
+              <input type="password" class="form-control" name="password" [(ngModel)]="tempUser.password" #password="ngModel" required>
             </div>
             <div class="row justify-content-center">
               <button type="submit" class="btn btn-dark">Sign in</button>

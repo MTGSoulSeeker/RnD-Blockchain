@@ -31,7 +31,7 @@
           </div>
         </div>
         <div *ngIf="room.type==='Public' || room.type==='Private' && isLogged===true">
-          <div class="card-header">
+          <div class="card-header" routerLink="/room/{{room.id}}">
             <h2>{{room.type}}</h2>
           </div>
           <div class="card-body" routerLink="/room/{{room.id}}">

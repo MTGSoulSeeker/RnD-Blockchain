@@ -1,151 +1,11 @@
-/**
- * ver 1.2.1
- * 
- * add private/public property of a vote
- * 
- * -----------------------------------------------------
- * ver 1.2.0
- * 
- * create room(s) to vote
- * only add/set option/list voters/cast ballot for opening rooms
- * voted voter cannot cast another vote
- * 
- * -----------------------------------------------------
- * ver1.1.4
- * 
- * add contract event
- * 
- * -----------------------------------------------------
- * ver1.1.3
- * 
- * add modifier to control vote, ballot, 1 address - 1 vote
- * check duplicate option when initiate the contract
- * 
- * -----------------------------------------------------
- * ver1.1.2
- * 
- * update
- *      add expired time: close the vote when time is up-to-date
- *      add list voters who can vote
- *          if the list is left empty, everyone can join the vote
- *          otherwise, only the ones in the list can cast vote
- *      get ballot of an address
- * 
- * -----------------------------------------------------
- * ver1.1.1
- * 
- * update
- *      add algorithm check 1 address - 1 vote
- * add new:
- *  property: 
- *      voted
- *  method:
- *      (none)
- * remove:
- *      (none)
- * 
- * -----------------------------------------------------
- * ver1.1.0
- * 
- * update
- *      VotFor
- *      change the way managing the ballot
- *          voteOf => listVotersOf
- *      getCountOf => getCountOf
- * add new:
- *  property: 
- *      owner
- *      listVotersOf
- *  method:
- *      getListVoterOf
- * remove:
- *      voteOf
- *      getCountOf
- * 
- * -----------------------------------------------------
- * ver1
- * 
- * add option when call the contract
- * vote for an option
- * convert option(bytes32) to string
- * get option vote
- * only available option can be voted
- * 
- */
- 
- 
 pragma solidity ^0.4.18;
- 
-contract ManageAccount
-{
-    struct Account
-    {
-        bytes8 id;
-        uint point;
-    }
-    mapping (address => Account) account;
-    address[] public listAddressAccount;
-    
-    event LOGaccountInfo(bytes8 id, address addr, uint point);
-    
-   function ManageAccount() public
-   {
-       //listAddrAcc = [msg.sender];
-   }
-   
-    modifier validID(bytes8 _id)
-    {
-         for(uint i = 0; i < listAddressAccount.length; i++)
-        {
-            if(account[listAddressAccount[i]].id == _id)
-            {
-                revert();
-            }
-        }
-        _;
-    }
-    modifier validAddr()
-    {
-        for(uint i = 0; i < listAddressAccount.length; i++)
-        {
-            if(msg.sender == listAddressAccount[i])
-            {
-                revert();
-            }
-        }
-        _;
-    }
-    
-    function createAcc(bytes8 _id) 
-        validID(_id)
-        validAddr
-        public returns(bool)
-    {
-        Account memory temp;
-        temp.id = _id;
-        temp.point = 0;
-        account[msg.sender] = temp;
-        listAddressAccount.push(msg.sender);
-         LOGaccountInfo(temp.id, msg.sender, temp.point);
 
-        
-        return true;
-    }
-    function getListAccounts() public view returns(address[])
-    {
-        return listAddressAccount;
-    }
-    function getAccountInfo() public view returns(bytes8)
-    {
-        return account[msg.sender].id;
-    }
-}
- 
- contract voting is ManageAccount
+import "./ManageAccount15.sol";
+
+contract voting15 is ManageAccount15
  {
     room[] rooms;
-
-    
+    uint[] result;
     struct room
     {
         address owner;
@@ -157,7 +17,6 @@ contract ManageAccount
         ListVoters listVoters;
         uint expiredTime;
         bool open;
-        mapping(bytes32 => address[]) listVotersOf;
     }
 
     struct Voter
@@ -177,6 +36,7 @@ contract ManageAccount
     {
         string questions;
         bytes32[] options;
+        mapping(bytes32 => address[]) listVotersOf;
     }
     
     event LOGroomOpened(uint indexed roomID, address indexed owner,string title, string descript, bool privateRoom, uint expiredTime);
@@ -191,8 +51,8 @@ contract ManageAccount
     event LOGroomResult(uint indexed roomID, bytes option, uint counts, address[] voters);
     
     event LOGvoteNotify(uint indexed roomID, address indexed sender, bytes32[] options);
-    event LOGcountOf(uint roomID, uint pollNo, bytes32 option, uint count);
-    event LOGvoterOf(uint roomID, uint pollNo, bytes32 option, address[] voter);
+    event LOGcountOf(uint roomID, uint pollNo, string question, bytes32[] option, uint[] count);
+    //event LOGvoterOf(uint roomID, uint pollNo, bytes32 option, address[] voter);
     
     
     modifier owned(uint _RoomID)
@@ -286,11 +146,8 @@ contract ManageAccount
         _;
     }
     
-    function voting()
-        public 
-    {
-        
-    }
+   
+    
     modifier emptyList(uint _roomID)
     {
         if(rooms[_roomID].listVoters.addrs.length >0)
@@ -299,6 +156,7 @@ contract ManageAccount
         }
         _;
     }
+    
     modifier emptyOption(uint _roomID)
     {
         if(rooms[_roomID].listVoters.addrs.length >0)
@@ -307,6 +165,13 @@ contract ManageAccount
         }
         _;
     }
+    
+     function voting15()
+        public 
+    {
+        
+    }
+    
     function openRoom(string _til, bool _privateR, string _des, uint _expiredTime) public returns (uint id)
     {
         id = rooms.length;
@@ -318,7 +183,7 @@ contract ManageAccount
         rooms[id].privateRoom = _privateR;
         rooms[id].expiredTime = _expiredTime;
         rooms[id].open = true;
-         LOGroomOpened(id, rooms[id].owner,rooms[id].title, rooms[id].descript, rooms[id].privateRoom, rooms[id].expiredTime);
+        LOGroomOpened(id, rooms[id].owner,rooms[id].title, rooms[id].descript, rooms[id].privateRoom, rooms[id].expiredTime);
     }
     
     function addPoll(uint _roomID, string _quest, bytes32[] _opt) 
@@ -332,7 +197,7 @@ contract ManageAccount
         rooms[_roomID].poll.length++;
         rooms[_roomID].poll[pollNo].questions = _quest;
         rooms[_roomID].poll[pollNo].options = _opt;
-         LOGpollingAdded(_roomID, pollNo, rooms[_roomID].poll[pollNo].questions, rooms[_roomID].poll[pollNo].options);
+        LOGpollingAdded(_roomID, pollNo, rooms[_roomID].poll[pollNo].questions, rooms[_roomID].poll[pollNo].options);
     }
 
     function getNumberOfPolls(uint _roomID) public view returns(uint)
@@ -341,7 +206,7 @@ contract ManageAccount
     }
     
     function closeRoom(uint _id) 
-            owned(_id) 
+            //owned(_id) 
             roomOpening(_id) public returns (bool)
     {
         rooms[_id].open = false;
@@ -349,13 +214,15 @@ contract ManageAccount
         {
             for(uint j = 0; j < rooms[_id].poll[i].options.length; j++)
             {
-               LOGcountOf(_id, j, rooms[_id].poll[i].options[j], rooms[_id].listVotersOf[rooms[_id].poll[i].options[j]].length);  
-               LOGvoterOf(_id, j, rooms[_id].poll[i].options[j], rooms[_id].listVotersOf[rooms[_id].poll[i].options[j]]);
+               result.push(rooms[_id].poll[i].listVotersOf[rooms[_id].poll[i].options[j]].length);
             }
+            LOGcountOf(_id, i, rooms[_id].poll[i].questions, rooms[_id].poll[i].options, result);
+            delete result;
         }
-         LOGroomClosed(rooms[_id].id);
+        LOGroomClosed(rooms[_id].id);
         return true;
     }
+    
     function voteForPrivateRoom(uint _roomID, bytes32[] _options)
         vailableVoter(_roomID, msg.sender)
         private 
@@ -364,8 +231,8 @@ contract ManageAccount
         rooms[_roomID].listVoters.voter[msg.sender].voted = true;
         account[msg.sender].point++;
         addToListVoteOf(_roomID, _options);
-         LOGvoteNotify(rooms[_roomID].id, msg.sender, rooms[_roomID].listVoters.voter[msg.sender].ballot);
-         LOGaccountInfo(account[msg.sender].id, msg.sender, account[msg.sender].point);
+        LOGvoteNotify(rooms[_roomID].id, msg.sender, rooms[_roomID].listVoters.voter[msg.sender].ballot);
+        LOGaccountInfo(account[msg.sender].id, msg.sender, account[msg.sender].point);
     }
 
     function voteFor(uint _roomID, bytes32[] _options)
@@ -384,15 +251,15 @@ contract ManageAccount
         rooms[_roomID].listVoters.addrs.push(msg.sender);
         account[msg.sender].point++;
         addToListVoteOf(_roomID, _options);
-         LOGvoteNotify(rooms[_roomID].id, msg.sender, rooms[_roomID].listVoters.voter[msg.sender].ballot);
-         LOGaccountInfo(account[msg.sender].id, msg.sender, account[msg.sender].point);
+        LOGvoteNotify(rooms[_roomID].id, msg.sender, rooms[_roomID].listVoters.voter[msg.sender].ballot);
+        LOGaccountInfo(account[msg.sender].id, msg.sender, account[msg.sender].point);
     }
     
     function addToListVoteOf(uint _roomID, bytes32[] _option) private 
     {
         for(uint i=0; i <  _option.length; i++)
         {
-            rooms[_roomID].listVotersOf[_option[i]].push(msg.sender);
+            rooms[_roomID].poll[i].listVotersOf[_option[i]].push(msg.sender);
         }
     }
     
@@ -404,7 +271,7 @@ contract ManageAccount
             public returns (bool)
     {
         rooms[_roomID].listVoters.addrs.push(msg.sender);
-         LOGPrivateListVoter(_roomID, account[msg.sender].id, msg.sender);
+        LOGPrivateListVoter(_roomID, account[msg.sender].id, msg.sender);
         for(uint i = 0; i < listAddressAccount.length; i++)
         {
             for(uint j = 0; j < _ids.length; j++)
@@ -412,7 +279,7 @@ contract ManageAccount
                 if(account[listAddressAccount[i]].id == _ids[j])
                 {
                     rooms[_roomID].listVoters.addrs.push(listAddressAccount[i]);
-                     LOGPrivateListVoter(_roomID, account[listAddressAccount[i]].id, listAddressAccount[i]);
+                    LOGPrivateListVoter(_roomID, account[listAddressAccount[i]].id, listAddressAccount[i]);
                 }
             }
         }

@@ -7,7 +7,7 @@
           <div class="form-group">
             <label class="control-label required" for="">ID</label>
             <sup style="color:red">*</sup>
-            <input type="id" class="form-control" name="id" [ngModel]="user.id" required maxlength="6" #id="ngModel" pattern="[A-Za-z]+[0-9]+">
+            <input type="id" class="form-control" name="id" [(ngModel)]="user.id" required maxlength="6" #id="ngModel" pattern="[A-Za-z]+[0-9]+">
             <small [hidden]="id.valid || (id.pristine && !f.submitted)" class="text-danger">
               ID is required (6 characters), only alphabets and number are allowed, format should be
               <i>IT456</i>.
@@ -16,7 +16,7 @@
           <div class="form-group">
             <label class="control-label required" for="">Password</label>
             <sup style="color:red">*</sup>
-            <input type="password" class="form-control" name="password" [ngModel]="user.password" required validateEqual="confirmPassword"
+            <input type="password" class="form-control" name="password" [(ngModel)]="user.password" required validateEqual="confirmPassword"
               reverse="true" #password="ngModel">
             <small [hidden]="password.valid || (password.pristine && !f.submitted)" class="text-danger">
               Password is required
@@ -25,7 +25,7 @@
           <div class="form-group">
             <label class="control-label required" for="">Retype password</label>
             <sup style="color:red">*</sup>
-            <input type="password" class="form-control" name="confirmPassword" [ngModel]="user.confirmPassword" required validateEqual="password"
+            <input type="password" class="form-control" name="confirmPassword" [(ngModel)]="user.confirmPassword" required validateEqual="password"
               reverse="false" #confirmPassword="ngModel">
             <small [hidden]="confirmPassword.valid || (confirmPassword.pristine && !f.submitted)" class="text-danger">
               Password mismatch

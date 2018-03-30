@@ -27,6 +27,7 @@ export class RoomcreateComponent implements OnInit {
   // Split and Remove space => input an array
   generateListVoter() {
     this.listVoter = this.tempListVoter.replace(/\s/g, '').split(";");
+    this.tempListVoter = "";
   }
 
   ngOnInit() {
@@ -45,6 +46,11 @@ export class RoomcreateComponent implements OnInit {
     }
 
     this.flag = null;
+  }
+
+  //Delay function
+  delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   //Change Color Button
@@ -81,7 +87,7 @@ export class RoomcreateComponent implements OnInit {
   }
 
   //Create a room
-  createRoom(ROOM: RoomCreation, user) {
+  async createRoom(ROOM: RoomCreation, user) {
     let id: string;
     let self = this;
     let loading: boolean = true; //Check if it is running or not
@@ -102,13 +108,13 @@ export class RoomcreateComponent implements OnInit {
             self.Connect.VotingContract
               .deployed()
               .then(function (temp02) {
-                for (let z = 0; z < x.length; z++) {
-                  temp02.addPoll(v.logs[0].args.roomID.toString(), x[z].question, x[z].options, { from: user, gas: 1000000 })
-                }
                 if (ROOM.type == 1) {
                   self.generateListVoter();
                   temp02.setListVotersByID(v.logs[0].args.roomID.toString(), self.listVoter, { from: user, gas: 1000000 })
                 }
+                for (let z = 0; z < x.length; z++) {
+                  temp02.addPoll(v.logs[0].args.roomID.toString(), x[z].question, x[z].options, { from: user, gas: 1000000 })
+                }                
               })
             loading = false;
             submitTrans.close();
@@ -126,7 +132,8 @@ export class RoomcreateComponent implements OnInit {
     self.temp.description = ' ';
     self.temp.dateEnd = ' ';
     self.temp.type = 'Public';
-    self.multipleChoice = [];
+    self.multipleChoice = [];  
+
   }
 
   //Create Question with Zero Option

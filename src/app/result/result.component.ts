@@ -18,11 +18,7 @@ export class ResultComponent implements OnInit {
   sender: Result[] = [];
   nQuestion: Question[] = [];
   n: number = 0;
-  addr: string = "";
-  isLoaded = false;
-  resultInfo: Result[];
   constructor(public thisDialogRef: MatDialogRef<ResultComponent>, @Inject(MAT_DIALOG_DATA) public data: any, private _connectService: ConnectService) {
-    this.addr = data.Daddr;
     this.n = data.Dnumber;
   }
 

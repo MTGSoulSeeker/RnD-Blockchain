@@ -6,7 +6,7 @@ import 'rxjs/add/observable/of';
 
 const Web3API = require('web3');
 const contract = require('truffle-contract');
-const VotingABI = require('../../build/contracts/voting14.json');
+const VotingABI = require('../../build/contracts/voting15.json');
 
 declare var window: any;
 

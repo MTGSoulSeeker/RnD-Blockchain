@@ -7,6 +7,11 @@ export class acc {
   addr: string;
 }
 
+export class loginInfo {
+  id: string;
+  password: string;
+}
+
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
@@ -16,10 +21,15 @@ export class NavbarComponent implements OnInit {
 
   listAcc: acc[] = [];
   validID: string = "";
+  tempUser: loginInfo;
 
   constructor(private _router: Router, private Connect: ConnectService) { }
 
   ngOnInit() {
+    this.tempUser = {
+      id: "",
+      password: ""
+    }
     this.watchEvent();
   }
 
@@ -56,12 +66,15 @@ export class NavbarComponent implements OnInit {
       result = result + "0";
     }
     result = "0x" + result
-    console.log(result);
     return result
   }
 
   //Login
   async login(value, valid) {
+    this.tempUser = {
+      id: "",
+      password: ""
+    };
     let temp = false;
     let tempID = this.convertStringToByte(value.id);
     for (let i = 0; i < this.listAcc.length; i++) {
@@ -73,6 +86,7 @@ export class NavbarComponent implements OnInit {
         });
       }
     }
+
     await this.delay(2000);
     if (temp) {
       this._router.navigate(['userinfo/', value.id]);

@@ -10,6 +10,12 @@ import { multiChoice } from '../test/multipleChoice';
 import { Choices } from './choices';
 import { StatusComponent } from '../status/status.component';
 
+export class simpleResult {
+  question: string;
+  option: string[];
+  count: number[];
+}
+
 @Component({
   selector: 'app-room',
   templateUrl: './room.component.html',
@@ -24,12 +30,9 @@ export class RoomComponent implements OnInit {
   multipleChoice: multiChoice[] = [];
   tempMultiChoice: Choices[] = [];
   flag: boolean = false;
+  SResult: simpleResult[] = [];
   //Initialize a service to connect to blockchain, a dialog to open Popup, route to get ID and location to go back
   constructor(private _connectService: ConnectService, public dialog: MatDialog, private route: ActivatedRoute, private location: Location) {
-  }
-
-  //Create temp date for a Room
-  ngOnInit() {
     this.room = {
       id: 0,
       title: '',
@@ -42,16 +45,73 @@ export class RoomComponent implements OnInit {
 
     this.getRoom();
     this.getOption();
+    this.getResult();
   }
+
+  //Create temp date for a Room
+  ngOnInit() {
+
+  }
+
+  //Delay function
+  delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
 
   //Function to go back the previous page
   goBack(): void {
     this.location.back();
   }
 
+  async checkClosed() {
+    let ClosedRoomID: number[] = [];
+    this._connectService.VotingContract
+      .deployed()
+      .then(function (temp) {
+        var events = temp.allEvents({ fromBlock: 0, toBlock: 'lastest' });
+        events.watch(function (error, log) {
+          if (log.event === "LOGroomClosed") {
+            ClosedRoomID.push(log.args.roomID * 1);
+          }
+        })
+      })
+      .catch(e => console.log(e));
+    await this.delay(2000);
+    console.log(this.room.id);
+    console.log(ClosedRoomID);
+    let timeNow = (new Date).getTime();
+    console.log(timeNow);
+    let timeEnd = this.room.dateEnd * 1;
+    console.log(timeEnd);
+    if (timeNow >= timeEnd) {
+      for (let i = 0; i < ClosedRoomID.length; i++) {
+        if (this.room.id == ClosedRoomID[i]) {
+          console.log("This room was closed");
+          this.flag = true;
+          return;
+        }
+      }
+
+      if (this.flag == false) {
+        this.sendEnd();
+        this.flag = true;
+      }
+    }
+    else {
+      console.log("This room is still avaible");
+    }
+  }
+
   //Make an End transaction to close the room
   sendEnd() {
-    this.flag = true;
+    let self = this;
+    self._connectService.web3.personal.unlockAccount(self._connectService.web3.eth.accounts[0], "123", 15000, () => {
+      self._connectService.VotingContract.deployed().then(function (v) {
+        v.closeRoom(self.id, { from: self._connectService.web3.eth.accounts[0], gas: 500000 })
+        console.log("Close the room " + self.id);
+      })
+    })
   }
 
   //Convert option from hex to string
@@ -86,18 +146,18 @@ export class RoomComponent implements OnInit {
   }
 
   //Open the popup result
-  openResult(id: number) {
-    let dialogRef01 = this.dialog.open(ConfirmComponent, {
-      width: '600px',
-      data: 'Please Login to check the result '
-    });
+  // openResult(id: number) {
+  //   let dialogRef01 = this.dialog.open(ConfirmComponent, {
+  //     width: '600px',
+  //     data: 'Please Login to check the result '
+  //   });
 
-    dialogRef01.afterClosed().subscribe(result => {
-      if (result.status == "Success") {
-        this.checkResult(id, result.user);
-      }
-    });
-  }
+  //   dialogRef01.afterClosed().subscribe(result => {
+  //     if (result.status == "Success") {
+  //       this.checkResultDetail(id, result.user);
+  //     }
+  //   });
+  // }
 
   //Get room by ID
   getRoom() {
@@ -115,7 +175,7 @@ export class RoomComponent implements OnInit {
             else {
               isPrivate = "Public";
             }
-            self.room.id = log.args.roomID;
+            self.room.id = log.args.roomID * 1;
             self.room.title = log.args.title;
             self.room.description = log.args.descript;
             self.room.dateCreated = self._connectService.web3.eth.getBlock(log.blockNumber).timestamp;
@@ -125,6 +185,7 @@ export class RoomComponent implements OnInit {
           }
         });
       });
+    this.checkClosed();
     return self.room;
   };
 
@@ -233,14 +294,36 @@ export class RoomComponent implements OnInit {
 
   }
 
-
   //Show the Result after Confirm
-  checkResult(id, addr) {
+  getResult(): void {
+    let self = this;
+
+    this._connectService.VotingContract
+      .deployed()
+      .then(function (temp) {
+        var events = temp.allEvents({ fromBlock: 0, toBlock: 'lastest' });
+        events.watch(function (error, log) {
+          if (log.event == "LOGcountOf" && log.args.roomID == self.id) { 
+            let tempstr:string[]=[];   
+            let tempcount:number[]=[];        
+            for (let i = 0; i < log.args.option.length; i++) {
+              tempstr.push(self.toHex(log.args.option[i]));
+              tempcount.push(log.args.count[i]*1);
+            }
+            self.SResult.push({ question: log.args.question, option: tempstr, count: tempcount });
+          }
+        });
+      }); 
+    console.log(self.SResult);
+  }
+
+  //Show the Result in detail after Confirm
+  checkResultDetail(id) {
     let n: number = this.tempMultiChoice.length;
     let dialogRef02 = this.dialog.open(ResultComponent, {
-      width: '1500px',
+      // width: '1500px',
       // panelClass: 'disable-mat-dialog-container',
-      data: { Did: id, Daddr: addr, Dnumber: n, Dquestion: this.multipleChoice }
+      data: { Did: id, Dnumber: n, Dquestion: this.multipleChoice }
       // data: { Did: id, Ddata: self.resultInfo }
     });
   }
