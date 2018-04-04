@@ -79,8 +79,10 @@
               </div>
             </div>
           </div>
-          <div class="card-footer">
-            <button type="submit" class="btn btn-lg btn-outline-success btn-block" (click)="openDialog()">Submit</button>
+          <div [hidden]="flag" class="text-center">
+            <div class="card-footer">
+              <button type="submit" class="btn btn-lg btn-outline-success btn-block" (click)="openDialog()">Submit</button>
+            </div>
           </div>
         </div>
       </div>
