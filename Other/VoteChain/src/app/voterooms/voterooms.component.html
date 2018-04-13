@@ -1,0 +1,63 @@
+<div class="container-fluid">
+  <h1 class="text-center">List of avaible votes</h1>
+  <div class="row">
+    <div class="offset-md-1 col-md-3">
+      <button class="btn btn-primary" routerLink="/create">Create</button>
+      <button class="btn btn-primary" (click)="openDialog()">Eligible Room</button>
+    </div>
+    <div class="col-md-1"></div>
+    <div class="offset-md-4 col-md-3">
+      <div class="btn-group btn-group-toggle">
+        <label class="btn btn-info" [class.active]="options === 'All' " (click)="onSelect('All')">
+          <input type="radio" name="options" value="All" [(ngModel)]="options"> All
+        </label>
+        <label class="btn btn-info" [class.active]="options === 'Private' " (click)="onSelect('Private')">
+          <input type="radio" name="options" value="Private" [(ngModel)]="options"> Private
+        </label>
+        <label class="btn btn-info" [class.active]="options === 'Public' " (click)="onSelect('Public')">
+          <input type="radio" name="options" value="Public" [(ngModel)]="options"> Public
+        </label>
+      </div>
+    </div>
+  </div>
+  <hr>
+  <div class="row">
+    <a class="col-md-3 card-size" *ngFor="let room of rooms | filterPipe : options">
+      <div class="card" [ngClass]="{'border-success text-success card-success': room.type==='Public','border-dark text-dark card-dark': room.type==='Private'}">
+        <div *ngIf="room.type==='Private' && isLogged===false">
+          <div class="card-body">
+            <h1 class="private">Private</h1>
+            <h3>Click Eligible button to get your private room</h3>
+          </div>
+        </div>
+        <div *ngIf="room.type==='Public' || room.type==='Private' && isLogged===true">
+          <div class="card-header" routerLink="/room/{{room.id}}">
+            <h2>{{room.type}}</h2>
+          </div>
+          <div class="card-body" routerLink="/room/{{room.id}}">
+            <h5 class="card-title">
+              <h2>{{room.title}}</h2>
+            </h5>
+            <p class="card-text text-left">
+              <b>Description: </b>{{room.description | slice:0:100}}
+              <br>
+              <b>Date Created: </b> {{room.dateCreated*1000| date:'medium'}}
+              <br>
+              <b>Date End: </b> {{room.dateEnd| date:'medium'}}
+              <br>
+              <b>Owner: </b>
+              <i>{{room.owner}}</i>
+              <br>
+              <b>Time remaining: </b>
+              <br>
+            </p>
+            <h2>
+              <countdown-timer [timeOnly]="true" [end]="room.dateEnd|date:'medium'"></countdown-timer>
+              hours
+            </h2>
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>

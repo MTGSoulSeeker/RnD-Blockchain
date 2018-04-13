@@ -1,0 +1,14 @@
+com.bosch.vn.capstone
+com.bosch.vn.capstone.business.domain
+com.bosch.vn.capstone.business.service
+com.bosch.vn.capstone.business.service.impl
+com.bosch.vn.capstone.controller
+com.bosch.vn.capstone.controller.admin
+com.bosch.vn.capstone.helper
+com.bosch.vn.capstone.jmeter
+com.bosch.vn.capstone.persistence.entity
+com.bosch.vn.capstone.persistence.repository
+com.bosch.vn.capstone.reducer
+com.bosch.vn.capstone.restcontroller
+com.bosch.vn.capstone.security
+com.bosch.vn.capstone.validator

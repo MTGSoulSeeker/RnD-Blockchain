@@ -1,0 +1,59 @@
+<!--The content below is only a placeholder and can be replaced.-->
+<div class="container">
+  <div class="row justify-content-md-center">
+    <div class="col-md-auto">
+        <hr>
+      <h1 (click)="getBettors()">Betting Number</h1>
+    </div>
+  </div>
+  <hr>
+  <div class="row modal-body">
+    <div class="col-md-6 text-center">
+      <div *ngFor="let bettor of listID">
+        <div>
+        <h4>Bettor: <br> {{bettor.address}} </h4>
+        <h4 >Bet: {{bettor.id}}</h4>
+        <!--<input type="text" placeholder="Node address">-->
+        <br>
+        <input type="text" [(ngModel)]="bettor.bet" placeholder="US Dollar">
+        <button class="btn btn-info align-middle" (click)="checkBalance(i,bettor.bet)">Bet</button>
+        <br>
+        <label>Random Number:</label>
+        <br>
+        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+          <label class="btn btn-info" [ngClass]="{'active': bettor.option==1}"  >
+            <input type="radio" name="options" value="1" (click)="setOption(i,1)"> &lt; 50
+          </label>
+          <label class="btn btn-info" [ngClass]="{'active': bettor.option==2}">
+            <input type="radio" name="options" value="2" (click)="setOption(i,2)"> &gt; 50
+          </label>
+        </div>
+        <hr>
+      </div>
+    </div>
+    </div>
+    <div class="col-md-6 text-center">
+      <h2 (click)="refreshBalance()">Rules</h2>
+      <p class="text-left">Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam,
+        feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies
+        mi vitae est. Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat
+        wisi, condimentum sed, commodo vitae, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros
+        ipsum rutrum orci, sagittis tempus lacus enim ac dui. Donec non enim in turpis pulvinar facilisis. Ut felis. Praesent
+        dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. Aliquam erat volutpat.
+        Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metus</p>
+      <h2>Random Number:
+        <br>{{randomNumber}}</h2>
+      <br>
+      <button class="btn btn-info align-middle" (click)="randomInt(0,100)">Generate Number</button>
+      <br>
+    </div>
+  </div>
+  <hr>
+  <div class="col-md-12 text-center">
+    <h2>The winner is: <br> {{winner}}</h2>
+    <br>
+    <h4>Prize: ${{prize}}</h4>
+    <br>
+    <button class="btn btn-info align-middle" (click)="setInstructor()">Generate Number</button>
+  </div>
+</div>

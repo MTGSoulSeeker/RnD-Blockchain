@@ -1,0 +1,78 @@
+<!--Navbar-->
+<nav class="navbar navbar-dark navbar-expand-lg fixed-top">
+  <!--BrandName-->
+  <a class="navbar-brand" routerLink="/index">Vote Chain</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+    aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <!--End BrandName-->
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <!--Pages-->
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" routerLink="/index">Introduction</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/discover">Discover</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/vote-rooms">Vote Rooms</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/faq">Q&amp;A</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/contact">Contact</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/test">Test</a>
+      </li>
+    </ul>
+    <!--End Pages-->
+    <ul class="navbar-nav ml-auto">
+      <!--Search-->
+      <li>
+        <div class="input-group">
+          <input class="form-control" type="search" placeholder="Search" aria-label="Search">
+          <div class="input-group-append">
+            <button class="btn btn-outline-light" type="submit">
+              <i class="fa fa-search"></i>
+            </button>
+          </div>
+        </div>
+      </li>
+      <!--End Search-->
+      <!--Login Form-->
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle custome-border" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
+          aria-expanded="false">
+          <i class="fa fa-user"></i>
+          Hello, User
+        </a>
+        
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+          <form class="px-4 py-3" #f="ngForm" novalidate (ngSubmit)="login(f.value, f.valid)">
+            <div class="form-group">
+              <label>ID:</label>
+              <input type="text" class="form-control" name="id" [(ngModel)]="tempUser.id"  #id="ngModel" required>
+            </div>
+            <div class="form-group">
+              <label>Password:</label>
+              <input type="password" class="form-control" name="password" [(ngModel)]="tempUser.password" #password="ngModel" required>
+            </div>
+            <div class="row justify-content-center">
+              <button type="submit" class="btn btn-dark">Sign in</button>
+              <span>&nbsp;</span>
+              <button type="button" class="btn btn-secondary" routerLink="/register">Sign up</button>
+            </div>
+          </form>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Forgot your account?</a>
+        </div>
+      </li>
+      <!--End Login Form-->
+    </ul>
+  </div>
+</nav>
+<!--End Navbar-->

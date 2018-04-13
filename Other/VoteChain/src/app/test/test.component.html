@@ -1,0 +1,31 @@
+<div class="container">
+  <div class="example-container mat-elevation-z8">
+    <mat-table #table [dataSource]="dataSource" matSort>
+
+      <ng-container matColumnDef="addr">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Address </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.addr}} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="options">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Option </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.options}} </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+    <mat-paginator #paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20]" [showFirstLastButtons]="true">
+    </mat-paginator>
+  </div>
+
+  <div *ngIf="isLoaded == false">
+    <button class="btn btn-success" (click)="getResult()">Check result</button>
+  </div>
+
+  <button class="btn btn-success" (click)="getClose()">Close</button>
+
+  <button class="btn btn-success" (click)="getTime()">Time</button>
+
+
+</div>
