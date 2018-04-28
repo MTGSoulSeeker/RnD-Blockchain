@@ -1,1 +1,0 @@
-Please open the index.html to explore our porfolio!
